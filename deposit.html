@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyNova - Deposit</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 70px; }
+        header { background-color: #161e2e; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #1f293d; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .header-left img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #38bdf8; }
+        .header-left span { font-size: 16px; font-weight: bold; color: #38bdf8; }
+        .container { max-width: 600px; margin: 15px auto; padding: 10px; }
+        .card { background-color: #161e2e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: 1px solid #1f293d; margin-bottom: 15px; }
+        .section-title { font-size: 14px; color: #94a3b8; margin-bottom: 10px; font-weight: bold; }
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .amount-btn { background-color: #0b0f19; border: 1px solid #334155; color: #ffffff; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .amount-btn:hover, .amount-btn.selected { border-color: #38bdf8; background-color: #1e293b; color: #38bdf8; }
+        .input-box { width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 12px 15px; border-radius: 8px; color: #ffffff; font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 15px; }
+        .input-box:focus { border-color: #38bdf8; }
+        .channel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .channel-card { background-color: #0b0f19; border: 2px solid #334155; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-size: 13px; font-weight: bold; color: #cbd5e1; }
+        .channel-card.active { border-color: #38bdf8; color: #38bdf8; background-color: #1e293b; }
+        .submit-btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; padding: 14px; font-size: 16px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3); }
+        .submit-btn:hover { background: linear-gradient(135deg, #0ea5e9, #0369a1); color: #ffffff; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
+        .modal-content { background-color: #161e2e; border: 1px solid #38bdf8; padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; text-align: center; }
+        .upi-box { background-color: #0b0f19; border: 1px dashed #38bdf8; padding: 10px; border-radius: 6px; color: #38bdf8; font-weight: bold; margin: 10px 0; word-break: break-all; }
+        .close-modal { background-color: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #1f293d; z-index: 50; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; }
+        .nav-item.active { color: #38bdf8; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left">
+        <a href="account.html" style="color: #38bdf8; text-decoration: none;"><i class="fa-solid fa-arrow-left text-lg"></i></a>
+        <span>SkyNova - Deposit</span>
+    </div>
+    <div style="font-size: 13px; color: #4ade80; font-weight: bold;">Bal: ₹0.65</div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <div class="section-title">Deposit Amount Select Karein</div>
+        <div class="amount-grid">
+            <button class="amount-btn" onclick="setAmount(100)">₹100</button>
+            <button class="amount-btn" onclick="setAmount(500)">₹500</button>
+            <button class="amount-btn" onclick="setAmount(1000)">₹1,000</button>
+            <button class="amount-btn" onclick="setAmount(5000)">₹5,000</button>
+            <button class="amount-btn" onclick="setAmount(10000)">₹10,000</button>
+            <button class="amount-btn" onclick="setAmount(50000)">₹50,000</button>
+        </div>
+
+        <div class="section-title">Ya Apna Amount Enter Karein</div>
+        <input type="number" id="customAmount" class="input-box" placeholder="Amount daalein (Min: ₹100)">
+
+        <div class="section-title">Payment Method</div>
+        <div class="channel-grid">
+            <div class="channel-card active" onclick="selectChannel(this)">UPI Fast Pay</div>
+            <div class="channel-card" onclick="selectChannel(this)">QR Code Pay</div>
+        </div>
+
+        <button class="submit-btn" onclick="processDeposit()">Recharge Now</button>
+    </div>
+</div>
+
+<!-- Payment Modal with QR & UTR Input -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: #38bdf8; margin-top: 0;">Payment Karein</h3>
+        <p style="font-size: 13px; color: #cbd5e1;">Selected Amount: <span id="modalAmount" style="color: #4ade80; font-weight: bold;">₹0</span></p>
+        
+        <div style="background: white; padding: 10px; border-radius: 8px; display: inline-block; margin: 10px 0;">
+            <img id="qrCodeImg" src="" alt="QR Code" style="width: 130px; height: 130px;">
+        </div>
+
+        <p style="font-size: 12px; color: #94a3b8; margin: 5px 0;">UPI ID par payment karein:</p>
+        <div class="upi-box" id="upiIdText">surendragadli32@okaxis</div>
+        <button onclick="copyUpiId()" style="background-color: #38bdf8; color: #0b0f19; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 12px; font-size: 12px;">UPI ID Copy Karein</button>
+        
+        <!-- UTR / Transaction ID Input Field -->
+        <div style="text-align: left; font-size: 12px; color: #cbd5e1; margin-bottom: 5px; font-weight: bold;">12 Digit UTR / Ref Number Dalein:</div>
+        <input type="text" id="utrInput" placeholder="Enter UTR / Transaction ID" class="input-box" style="margin-bottom: 10px; padding: 10px; font-size: 14px;">
+
+        <button onclick="submitUtr()" class="submit-btn" style="padding: 10px; font-size: 14px; margin-bottom: 5px;">Recharge Submit Karein</button>
+        <button class="close-modal" onclick="closeModal()">Cancel</button>
+    </div>
+</div>
+
+<div class="navbar">
+    <a href="home.html" class="nav-item">🏠 Home</a>
+    <a href="game.html" class="nav-item">🎮 Game</a>
+    <a href="refer.html" class="nav-item">🎁 Refer & Earn</a>
+    <a href="account.html" class="nav-item active">👤 Account</a>
+</div>
+
+<script>
+    function setAmount(amount) {
+        document.getElementById('customAmount').value = amount;
+        let buttons = document.querySelectorAll('.amount-btn');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        event.target.classList.add('selected');
+    }
+
+    function selectChannel(element) {
+        let channels = document.querySelectorAll('.channel-card');
+        channels.forEach(ch => ch.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function processDeposit() {
+        let amt = document.getElementById('customAmount').value;
+        if(!amt || amt < 100) {
+            alert("Kripya kam se kam ₹100 enter karein!");
+            return;
+        }
+        document.getElementById('modalAmount').innerText = "₹" + amt;
+        let upiLink = `upi://pay?pa=surendragadli32@okaxis&pn=SkyNova&am=${amt}&cu=INR`;
+        document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
+        document.getElementById('utrInput').value = ''; // Reset UTR field
+        document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    function copyUpiId() {
+        let upi = document.getElementById('upiIdText').innerText;
+        navigator.clipboard.writeText(upi);
+        alert("UPI ID successfully copy ho gayi: " + upi);
+    }
+
+    function submitUtr() {
+        let utr = document.getElementById('utrInput').value.trim();
+        if(!utr || utr.length < 8) {
+            alert("Kripya sahi UTR / Transaction ID enter karein!");
+            return;
+        }
+        alert("Recharge request submitted successfully!\nUTR ID: " + utr + "\nVerification ke baad balance aapke account me add kar diya jayega.");
+        closeModal();
+    }
+</script>
+</body>
+</html>

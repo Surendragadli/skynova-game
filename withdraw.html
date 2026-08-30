@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyNova - Withdrawal</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 450px;
+            margin: auto;
+            background-color: #161e2e;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #1f293d;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h2 {
+            color: #38bdf8;
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .balance-box {
+            background-color: #0b0f19;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .balance-title {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .balance-val {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-top: 5px;
+        }
+        .turnover-info {
+            background-color: #0b0f19;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+        .turnover-info span {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            background-color: #0b0f19;
+            border: 1px solid #334155;
+            padding: 12px;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #38bdf8;
+        }
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #f59e0b, #eab308);
+            color: #000000;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Withdrawal Request</h2>
+
+    <div class="balance-box">
+        <div class="balance-title">Nikalne Yogya Balance (Withdrawable Balance)</div>
+        <div class="balance-val">₹<span id="withdrawableBalance">69.00</span></div>
+    </div>
+
+    <!-- Turnover Requirement Box -->
+    <div class="turnover-info" id="turnoverBox">
+        Required Turnover (5x): ₹<span id="reqTurnoverVal">0.00</span> | Played: ₹<span id="playedTurnoverVal">0.00</span>
+    </div>
+
+    <div class="form-group">
+        <label>Withdrawal Amount Dalein (Min: ₹200)</label>
+        <input type="number" id="withdrawAmount" placeholder="Amount daalein (Min: ₹200)">
+    </div>
+
+    <div class="form-group">
+        <label>Apni UPI ID Dalein</label>
+        <input type="text" id="upiId" placeholder="jaise: yourname@okaxis">
+    </div>
+
+    <button onclick="submitWithdrawal()" class="submit-btn">Withdraw Request Bhejein</button>
+
+    <a href="account.html" class="back-link">⬅ Account par wapas jayein</a>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '69.00');
+        document.getElementById('withdrawableBalance').innerText = currentBal.toFixed(2);
+
+        // Load turnover details for display
+        let requiredTurnover = parseFloat(localStorage.getItem('skynova_required_turnover') || '0');
+        let playedTurnover = parseFloat(localStorage.getItem('skynova_current_turnover') || '0');
+        
+        document.getElementById('reqTurnoverVal').innerText = requiredTurnover.toFixed(2);
+        document.getElementById('playedTurnoverVal').innerText = playedTurnover.toFixed(2);
+    });
+
+    function submitWithdrawal() {
+        let amount = parseFloat(document.getElementById('withdrawAmount').value);
+        let upi = document.getElementById('upiId').value.trim();
+        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '69.00');
+        let userUID = localStorage.getItem('skynova_user_uid') || '641435';
+
+        if (isNaN(amount) || amount < 200) {
+            alert("Minimum withdrawal amount ₹200 hai!");
+            return;
+        }
+        if (amount > currentBal) {
+            alert("Aapke account me itna balance nahi hai!");
+            return;
+        }
+        if (!upi) {
+            alert("Kripya apni sahi UPI ID enter karein!");
+            return;
+        }
+
+        // --- Rule 1: Pehle Deposit Zaroori Hai (Bonus/Gift code se direct withdraw block) ---
+        let hasDeposited = localStorage.getItem('skynova_has_deposited_' + userUID);
+        if (!hasDeposited) {
+            alert("Withdrawal restriction: Free bonus ya gift code ke paise nikalne ke liye pehle minimum deposit karna zaroori hai!");
+            return;
+        }
+
+        // --- Rule 2: 5x Wagering / Turnover Requirement Check ---
+        let requiredTurnover = parseFloat(localStorage.getItem('skynova_required_turnover') || '0');
+        let playedTurnover = parseFloat(localStorage.getItem('skynova_current_turnover') || '0');
+
+        if (playedTurnover < requiredTurnover) {
+            let remaining = requiredTurnover - playedTurnover;
+            alert(`Withdrawal restriction: Total balance ka 5 guna khelna zaroori hai!\nAapko abhi ₹${remaining.toFixed(2)} ka aur game khelna hoga.`);
+            return;
+        }
+        // -----------------------------------------------------------------------------------
+
+        // Deduct balance temporarily until admin approves/rejects
+        let newBal = currentBal - amount;
+        localStorage.setItem('skynova_balance', newBal.toFixed(2));
+
+        // Save to pending withdrawals for admin panel
+        let pendingWithdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
+        pendingWithdraws.push({
+            uid: userUID,
+            amount: amount,
+            upi: upi,
+            time: new Date().toLocaleString()
+        });
+        localStorage.setItem('skynova_pending_withdraws', JSON.stringify(pendingWithdraws));
+
+        alert("Withdrawal request successfully bhej di gayi hai! Admin approval ke baad amount transfer ho jayega.");
+        window.location.href = 'account.html';
+    }
+</script>
+</body>
+</html>

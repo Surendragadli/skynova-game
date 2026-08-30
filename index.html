@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyNova - Login & Signup</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .logo-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #38bdf8;
+        }
+        h2 {
+            text-align: center;
+            color: #38bdf8;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #475569;
+            background-color: #0f172a;
+            color: #fff;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #38bdf8;
+            border: none;
+            color: #0f172a;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0ea5e9;
+        }
+        .toggle-btn {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        .toggle-btn span {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+        #message {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="logo.png" alt="SkyNova Logo">
+    </div>
+    <h2 id="form-title">SkyNova - Signup</h2>
+    <form id="authForm">
+        <div class="form-group">
+            <label>Mobile Number (10 Digits)</label>
+            <input type="text" id="mobile" maxlength="10" pattern="[0-9]{10}" required placeholder="10 digit ka mobile number">
+        </div>
+        <div class="form-group" id="passwordGroup">
+            <label id="passwordLabel">Password</label>
+            <input type="password" id="password" required placeholder="Apni marji ka password dalein">
+        </div>
+        <div class="form-group" id="inviteGroup">
+            <label>Invite Code (Optional)</label>
+            <input type="text" id="inviteCode" placeholder="Invite code agar ho">
+        </div>
+        <button type="submit" id="submitBtn">Sign Up</button>
+    </form>
+    
+    <!-- Toggle & Forgot Links -->
+    <div class="toggle-btn" id="forgotToggle" style="margin-top: 12px; display: none;" onclick="switchMode('login')">
+        <p>Yaad aa gaya? <span>Login karein</span></p>
+    </div>
+    <div class="toggle-btn" id="forgotLink" style="margin-top: 8px;" onclick="switchMode('forgot')">
+        <p style="color: #f59e0b; font-size: 13px;">Password bhul gaye? <span>Reset karein</span></p>
+    </div>
+    
+    <div class="toggle-btn" id="mainToggle" onclick="switchMode('toggle')">
+        <p id="toggleText">Pehle se account hai? <span>Login karein</span></p>
+    </div>
+    
+    <div id="message"></div>
+</div>
+
+<script>
+    let mode = 'signup'; // 'signup', 'login', 'forgot'
+
+    // Auto-detect referral code from URL parameters when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refParam = urlParams.get('ref');
+        if (refParam) {
+            document.getElementById('inviteCode').value = refParam;
+            localStorage.setItem('skynova_signup_ref', refParam);
+        } else {
+            let savedRef = localStorage.getItem('skynova_signup_ref');
+            if (savedRef) {
+                document.getElementById('inviteCode').value = savedRef;
+            }
+        }
+    });
+
+    function switchMode(type) {
+        const title = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submitBtn');
+        const inviteGroup = document.getElementById('inviteGroup');
+        const passwordLabel = document.getElementById('passwordLabel');
+        const mainToggle = document.getElementById('mainToggle');
+        const forgotLink = document.getElementById('forgotLink');
+        const forgotToggle = document.getElementById('forgotToggle');
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerText = "";
+
+        if (type === 'toggle') {
+            mode = (mode === 'signup') ? 'login' : 'signup';
+        } else {
+            mode = type;
+        }
+
+        if (mode === 'login') {
+            title.innerText = "SkyNova - Login";
+            submitBtn.innerText = "Login";
+            passwordLabel.innerText = "Password";
+            inviteGroup.style.display = "none";
+            forgotLink.style.display = "block";
+            forgotToggle.style.display = "none";
+            mainToggle.style.display = "block";
+            mainToggle.innerHTML = "<p>Account nahi hai? <span>Sign Up karein</span></p>";
+        } else if (mode === 'signup') {
+            title.innerText = "SkyNova - Signup";
+            submitBtn.innerText = "Sign Up";
+            passwordLabel.innerText = "Password";
+            inviteGroup.style.display = "block";
+            forgotLink.style.display = "block";
+            forgotToggle.style.display = "none";
+            mainToggle.style.display = "block";
+            mainToggle.innerHTML = "<p>Pehle se account hai? <span>Login karein</span></p>";
+        } else if (mode === 'forgot') {
+            title.innerText = "SkyNova - Reset Password";
+            submitBtn.innerText = "Naya Password Set Karein";
+            passwordLabel.innerText = "Naya Password Dalein";
+            inviteGroup.style.display = "none";
+            forgotLink.style.display = "none";
+            forgotToggle.style.display = "block";
+            mainToggle.style.display = "none";
+        }
+    }
+
+    document.getElementById('authForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const mobile = document.getElementById('mobile').value.trim();
+        const password = document.getElementById('password').value;
+        const inviteCode = document.getElementById('inviteCode').value.trim();
+        const messageDiv = document.getElementById('message');
+
+        if (mobile.length !== 10 || isNaN(mobile)) {
+            messageDiv.style.color = "#f87171";
+            messageDiv.innerText = "Kripya sahi 10 digit ka mobile number dalein!";
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('skynova_users') || '[]');
+
+        if (mode === 'login') {
+            let foundUser = users.find(u => u.mobile === mobile && u.password === password);
+            if (foundUser) {
+                messageDiv.style.color = "#4ade80";
+                messageDiv.innerText = "Login successful! Redirecting...";
+                localStorage.setItem('skynova_logged_mobile', mobile);
+                setTimeout(() => { window.location.href = 'home.html'; }, 800);
+            } else {
+                messageDiv.style.color = "#f87171";
+                messageDiv.innerText = "Galat mobile number ya password!";
+            }
+        } 
+        else if (mode === 'signup') {
+            let existingUser = users.find(u => u.mobile === mobile);
+            if (existingUser) {
+                messageDiv.style.color = "#f87171";
+                messageDiv.innerText = "Yeh mobile number pehle se registered hai! Kripya Login karein.";
+                return;
+            }
+
+            users.push({ mobile, password, inviteCode });
+            localStorage.setItem('skynova_users', JSON.stringify(users));
+            
+            // Set initial ₹69 Signup Bonus
+            localStorage.setItem('skynova_balance', '69.00');
+            localStorage.setItem('skynova_logged_mobile', mobile);
+            
+            // Generate unique UID
+            let userUID = Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('skynova_user_uid', userUID);
+
+            // Handle Referral Tracking Record
+            let refToUse = inviteCode || localStorage.getItem('skynova_signup_ref');
+            if (refToUse && refToUse.startsWith('SKY')) {
+                let referrerUID = refToUse.replace('SKY', '');
+                let allReferrals = JSON.parse(localStorage.getItem('skynova_referral_records') || '{}');
+                
+                if (!allReferrals[referrerUID]) {
+                    allReferrals[referrerUID] = [];
+                }
+                let maskedMobile = mobile.substring(0, 2) + "••••••" + mobile.substring(8);
+                allReferrals[referrerUID].push({ mobile: maskedMobile, time: new Date().toLocaleDateString() });
+                
+                localStorage.setItem('skynova_referral_records', JSON.stringify(allReferrals));
+                localStorage.removeItem('skynova_signup_ref');
+            }
+
+            messageDiv.style.color = "#4ade80";
+            messageDiv.innerText = "Signup successful! ₹69 Bonus added. Redirecting...";
+            setTimeout(() => { window.location.href = 'home.html'; }, 800);
+        } 
+        else if (mode === 'forgot') {
+            let userIndex = users.findIndex(u => u.mobile === mobile);
+            if (userIndex === -1) {
+                messageDiv.style.color = "#f87171";
+                messageDiv.innerText = "Yeh mobile number registered nahi hai!";
+                return;
+            }
+
+            // Update user password
+            users[userIndex].password = password;
+            localStorage.setItem('skynova_users', JSON.stringify(users));
+
+            messageDiv.style.color = "#4ade80";
+            messageDiv.innerText = "Password successfully reset ho gaya! Ab login karein.";
+            setTimeout(() => { switchMode('login'); }, 1200);
+        }
+    });
+</script>
+
+</body>
+</html>
