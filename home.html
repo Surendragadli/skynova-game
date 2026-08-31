@@ -8,38 +8,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 90px; }
-        header { background-color: #161e2e; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #1f293d; }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .header-left img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #38bdf8; }
-        .header-left span { font-size: 18px; font-weight: bold; color: #38bdf8; }
-        .wallet-box { background-color: #0b0f19; padding: 6px 14px; border-radius: 20px; border: 1px solid #38bdf8; font-size: 14px; color: #38bdf8; font-weight: bold; }
-        
-        .container { max-width: 500px; margin: 25px auto; padding: 10px; }
-        .banner-card { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
-        .play-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; padding: 16px 50px; font-size: 20px; font-weight: bold; border: none; border-radius: 35px; cursor: pointer; text-transform: uppercase; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); text-decoration: none; display: inline-block; margin-top: 25px; letter-spacing: 1px; }
-
-        /* Badi aur Behtar Navigation Bar (Jaise Refer Page Par Hai) */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); }
+        header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
+        .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
+        .container { max-width: 500px; margin: 15px auto; padding: 10px; }
+        .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
+        .balance-val { font-size: 32px; font-weight: bold; color: #4ade80; margin: 10px 0; }
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; text-decoration: none; display: inline-block; }
+        .btn-deposit { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+        .btn-withdraw { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+        .game-banner { background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #38bdf8; border-radius: 14px; padding: 25px; text-align: center; margin-top: 15px; }
+        .game-banner h2 { color: #38bdf8; margin-bottom: 10px; }
+        .btn-play { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; padding: 14px 30px; border-radius: 10px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; text-transform: uppercase; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: bold; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
-        .nav-item i { font-size: 20px; }
         .nav-item.active { color: #38bdf8; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="header-left">
-        <img src="logo.png" alt="Logo">
-        <span>SkyNova</span>
-    </div>
-    <div class="wallet-box">Bal: ₹<span id="userBalance">326.10</span></div>
+    <div class="brand"><i class="fa-solid fa-rocket"></i> SkyNova</div>
+    <a href="admin.html" style="color: #f59e0b; text-decoration: none; font-size: 13px; font-weight: bold;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
 </header>
 
 <div class="container">
-    <div class="banner-card">
-        <div style="font-size: 26px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; font-style: italic;">SkyNova Aviator</div>
-        <p style="font-size: 14px; color: #94a3b8; margin-bottom: 20px;">Fly Beyond Limits & Win Big!</p>
-        <a href="game.html" class="play-btn"><i class="fa-solid fa-rocket"></i> PLAY NOW</a>
+    <div class="card">
+        <div style="font-size: 13px; color: #94a3b8;">Total Available Balance</div>
+        <div class="balance-val">₹<span id="homeBalance">326.10</span></div>
+        <div style="font-size: 12px; color: #64748b;">UID: <span id="homeUid">794973</span></div>
+        <div class="btn-row">
+            <a href="account.html" class="btn btn-deposit">Deposit</a>
+            <a href="account.html" class="btn btn-withdraw">Withdraw</a>
+        </div>
+    </div>
+
+    <div class="game-banner">
+        <h2>Aviator Flight Game</h2>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Bet lagayein aur rocket ke sath fly karke cash out karein!</p>
+        <a href="game.html" class="btn-play">Play Now</a>
     </div>
 </div>
 
@@ -50,10 +57,10 @@
 </div>
 
 <script>
-    window.addEventListener('DOMContentLoaded', () => {
-        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
-        document.getElementById('userBalance').innerText = currentBal.toFixed(2);
-    });
+    let balance = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
+    let uid = localStorage.getItem('skynova_uid') || '794973';
+    document.getElementById('homeBalance').innerText = balance.toFixed(2);
+    document.getElementById('homeUid').innerText = uid;
 </script>
 </body>
 </html>
