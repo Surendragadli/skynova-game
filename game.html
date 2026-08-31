@@ -15,10 +15,18 @@
         .wallet-box { background-color: #0b0f19; padding: 6px 14px; border-radius: 20px; border: 1px solid #38bdf8; font-size: 14px; color: #38bdf8; font-weight: bold; }
         
         .game-container { max-width: 500px; margin: 15px auto; padding: 10px; }
-        .game-screen { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
-        .multiplier-display { font-size: 45px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
-        .status-text { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; }
         
+        /* History Bar */
+        .history-bar { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; margin-bottom: 10px; white-space: nowrap; }
+        .history-pill { background: #161e2e; border: 1px solid #334155; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #38bdf8; }
+
+        .game-screen { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
+        .multiplier-display { font-size: 45px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); z-index: 2; }
+        .status-text { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; z-index: 2; }
+        
+        /* Plane Animation */
+        .plane-icon { position: absolute; font-size: 35px; color: #f59e0b; transition: transform 0.1s linear; bottom: 40px; left: 30px; z-index: 1; text-shadow: 0 0 10px rgba(245, 158, 11, 0.6); }
+
         .betting-panel { background-color: #161e2e; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         .input-group { display: flex; gap: 10px; margin-bottom: 12px; }
         .bet-input { flex: 1; background: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 16px; font-weight: bold; outline: none; }
@@ -48,9 +56,19 @@
 </header>
 
 <div class="game-container">
+    <!-- Recent Multiplier History Bar -->
+    <div class="history-bar" id="historyBar">
+        <div class="history-pill">1.45x</div>
+        <div class="history-pill">2.10x</div>
+        <div class="history-pill">1.12x</div>
+        <div class="history-pill">3.50x</div>
+    </div>
+
     <div class="game-screen">
         <div id="multiplier" class="multiplier-display">1.00x</div>
         <div id="gameStatus" class="status-text">Waiting for next round...</div>
+        <!-- Flying Rocket/Plane Animation -->
+        <i id="plane" class="fa-solid fa-rocket plane-icon" style="transform: translate(0px, 0px) rotate(0deg);"></i>
     </div>
 
     <div class="betting-panel">
@@ -83,6 +101,9 @@
     let betPlaced = false;
     let activeBetAmount = 0;
     let gameInterval = null;
+    let historyList = JSON.parse(localStorage.getItem('skynova_game_history') || '["1.45x", "2.10x", "3.50x"]');
+
+    updateHistoryUI();
 
     function setBet(amount) {
         let current = parseFloat(document.getElementById('betAmount').value || 0);
@@ -93,6 +114,11 @@
         balance = newBal;
         localStorage.setItem('skynova_balance', balance.toFixed(2));
         document.getElementById('userBalance').innerText = balance.toFixed(2);
+    }
+
+    function updateHistoryUI() {
+        let bar = document.getElementById('historyBar');
+        bar.innerHTML = historyList.map(h => `<div class="history-pill">${h}</div>`).join('');
     }
 
     function handleBetAction() {
@@ -116,7 +142,6 @@
             btn.style.background = "#64748b";
             btn.disabled = true;
 
-            // Push live bet for admin panel
             let liveBets = JSON.parse(localStorage.getItem('skynova_live_bets') || '[]');
             liveBets.push({ uid: uid, amount: amount, panel: 1, status: 'Active' });
             localStorage.setItem('skynova_live_bets', JSON.stringify(liveBets));
@@ -126,6 +151,10 @@
     function startRound() {
         gameState = 'waiting';
         document.getElementById('gameStatus').innerText = "Next round starting in 3s...";
+        let plane = document.getElementById('plane');
+        plane.style.transform = `translate(0px, 0px) rotate(0deg)`;
+        plane.style.display = 'block';
+
         setTimeout(() => {
             gameState = 'running';
             currentMultiplier = 1.00;
@@ -140,12 +169,20 @@
                 btn.setAttribute('onclick', 'cashOut()');
             }
 
-            // Check admin override multiplier
             let overrideCrash = parseFloat(localStorage.getItem('aviator_override_crash') || localStorage.getItem('skynova_admin_crash') || '2.00');
+            let xPos = 30;
+            let yPos = 0;
 
             gameInterval = setInterval(() => {
                 currentMultiplier += 0.03;
                 document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
+
+                // Animate plane moving up and right
+                xPos += 1.5;
+                yPos += 1.2;
+                if(xPos > 220) xPos = 220;
+                if(yPos > 110) yPos = 110;
+                plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(25deg)`;
 
                 if(currentMultiplier >= overrideCrash) {
                     crashGame();
@@ -175,8 +212,16 @@
     function crashGame() {
         clearInterval(gameInterval);
         gameState = 'crashed';
-        document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
+        let finalStr = currentMultiplier.toFixed(2) + 'x';
+        document.getElementById('multiplier').innerText = finalStr;
         document.getElementById('gameStatus').innerText = "CRASHED!";
+        document.getElementById('plane').style.display = 'none';
+
+        // Add to history
+        historyList.unshift(finalStr);
+        if(historyList.length > 10) historyList.pop();
+        localStorage.setItem('skynova_game_history', JSON.stringify(historyList));
+        updateHistoryUI();
 
         if(betPlaced) {
             betPlaced = false;
