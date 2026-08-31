@@ -27,6 +27,35 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Baaki sabhi HTML pages ke liye direct routes
+app.get('/home.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'home.html'));
+});
+
+app.get('/game.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'game.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/deposit.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'deposit.html'));
+});
+
+app.get('/withdraw.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'withdraw.html'));
+});
+
+app.get('/refer.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'refer.html'));
+});
+
+app.get('/account.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'account.html'));
+});
+
 // Signup Route
 app.post('/api/signup', (req, res) => {
     const { mobile, password, inviteCode } = req.body;
