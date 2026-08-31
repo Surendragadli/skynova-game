@@ -22,7 +22,7 @@
         .game-screen { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
         .multiplier-display { font-size: 45px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); z-index: 2; }
         .status-text { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; z-index: 2; }
-        .plane-icon { position: absolute; font-size: 35px; color: #f59e0b; transition: transform 0.1s linear; bottom: 40px; left: 30px; z-index: 1; display: none; }
+        .plane-icon { position: absolute; font-size: 35px; color: #f59e0b; bottom: 40px; left: 30px; z-index: 1; display: none; will-change: transform; }
 
         .betting-panel { background-color: #161e2e; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         .input-group { display: flex; gap: 10px; margin-bottom: 12px; }
@@ -97,7 +97,6 @@
     let currentMultiplier = 1.00;
     let betPlaced = false;
     let activeBetAmount = 0;
-    let flightInterval = null;
     let historyList = JSON.parse(localStorage.getItem('skynova_game_history') || '["1.45x", "2.10x"]');
     let cloudPeriodCrashes = {};
 
@@ -184,17 +183,19 @@
         }
     }
 
+    // Smooth & Non-blocking Continuous Loop with 13 seconds waiting time
     function runContinuousGameLoop() {
         setInterval(async () => {
-            fetchPeriodCrashes(); // Refresh period crashes from cloud periodically
+            fetchPeriodCrashes();
 
             let now = Math.floor(Date.now() / 1000);
-            let cycleTime = now % 25; // 25s total cycle (13s wait + 12s flight)
-            let periodId = 2026083100 + Math.floor(now / 25);
+            let totalCycle = 25; // 13 sec waiting + 12 sec flight
+            let cycleTime = now % totalCycle; 
+            let periodId = 2026083100 + Math.floor(now / totalCycle);
             document.getElementById('periodNumber').innerText = periodId;
 
             if(cycleTime < 13) {
-                // Waiting Phase
+                // Waiting Phase (13 Seconds)
                 if(gameState !== 'waiting') {
                     gameState = 'waiting';
                     document.getElementById('multiplier').innerText = "1.00x";
@@ -233,24 +234,24 @@
                     }
                 }
 
-                currentMultiplier += 0.04;
+                let flightElapsed = cycleTime - 13; // 0 to 11 seconds
+                currentMultiplier = 1.00 + (flightElapsed * 0.25);
                 document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
 
-                let xPos = 30 + ((cycleTime - 13) * 18);
-                let yPos = (cycleTime - 13) * 9;
+                let xPos = 30 + (flightElapsed * 18);
+                let yPos = flightElapsed * 9;
                 if(xPos > 220) xPos = 220;
                 if(yPos > 110) yPos = 110;
                 let plane = document.getElementById('plane');
                 plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(25deg)`;
 
-                // Check if admin has set specific crash multiplier for this period
-                let targetCrash = cloudPeriodCrashes[periodId] || 2.00;
+                let targetCrash = cloudPeriodCrashes[periodId] || 3.00;
 
                 if((currentMultiplier >= targetCrash || cycleTime >= 24) && gameState === 'running') {
                     triggerCrash(targetCrash);
                 }
             }
-        }, 1000);
+        }, 200); // 200ms interval for ultra-smooth rendering without lag
     }
 
     function cashOut() {
