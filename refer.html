@@ -7,7 +7,7 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 70px; }
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 80px; }
         header { background-color: #161e2e; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #1f293d; }
         .header-left { display: flex; align-items: center; gap: 10px; }
         .header-left img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #38bdf8; }
@@ -19,6 +19,31 @@
         .submit-btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; padding: 12px; font-size: 15px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3); }
         .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; background: #0b0f19; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
         .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
+
+        /* Agent Invite Bonus Table */
+        .reward-table-card { background-color: #161e2e; border-radius: 12px; border: 1px solid #1f293d; overflow: hidden; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        .table-header-title { background: linear-gradient(135deg, #fbbf24, #d97706); color: #0b0f19; padding: 12px; font-weight: bold; font-size: 16px; text-align: center; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background-color: #1f293d; color: #38bdf8; padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #334155; }
+        td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
+        tr:last-child td { border-bottom: none; }
+
+        /* Member First Recharge Bonus Section */
+        .bonus-list-container { margin-top: 25px; }
+        .section-banner-title { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #ffffff; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 15px; text-align: center; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
+        .first-dep-card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .first-dep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .first-dep-title { font-size: 15px; font-weight: bold; color: #f8fafc; }
+        .first-dep-title span { color: #f59e0b; }
+        .bonus-tag { font-size: 14px; font-weight: bold; color: #f59e0b; }
+        .first-dep-desc { font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
+        .first-dep-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .progress-box { flex: 1; background-color: #0b0f19; border: 1px solid #334155; border-radius: 20px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #94a3b8; font-weight: bold; }
+        .dep-action-btn { background: transparent; border: 1px solid #f59e0b; color: #f59e0b; padding: 5px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; text-decoration: none; cursor: pointer; transition: 0.2s; }
+        .dep-action-btn:hover { background: #f59e0b; color: #0b0f19; }
+
+        .rules-box { background-color: #161e2e; border: 1px solid #1f293d; border-radius: 12px; padding: 15px; margin-top: 20px; font-size: 12px; color: #94a3b8; line-height: 1.6; }
+        
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #1f293d; z-index: 50; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; }
         .nav-item.active { color: #38bdf8; }
@@ -54,9 +79,136 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="section-title" style="font-size: 15px; text-align: left;"><i class="fa-solid fa-users"></i> Aapke Invite kiye gaye Users</div>
-        <div style="padding: 20px 0; color: #64748b; font-size: 13px;">Abhi tak kisi ko invite nahi kiya hai.</div>
+    <!-- Agent Invite Bonus Reward Table -->
+    <div class="reward-table-card">
+        <div class="table-header-title"><i class="fa-solid fa-award"></i> Agent Invite Bonus</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Invite Account</th>
+                    <th>Deposit Amount</th>
+                    <th>Bonus</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹55.00</td></tr>
+                <tr><td>3 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹155.00</td></tr>
+                <tr><td>10 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹555.00</td></tr>
+                <tr><td>30 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹1,555.00</td></tr>
+                <tr><td>60 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹2,955.00</td></tr>
+                <tr><td>100 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹5,655.00</td></tr>
+                <tr><td>200 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹11,555.00</td></tr>
+                <tr><td>500 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹28,555.00</td></tr>
+                <tr><td>1000 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹58,555.00</td></tr>
+                <tr><td>5000 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹365,555.00</td></tr>
+                <tr><td>10000 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹765,555.00</td></tr>
+                <tr><td>20000 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹1,655,555.00</td></tr>
+                <tr><td>50000 People</td><td style="color: #4ade80;">₹300.00</td><td style="color: #fbbf24; font-weight: bold;">₹3,655,555.00</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Member First Recharge Bonus Section -->
+    <div class="bonus-list-container">
+        <div class="section-banner-title"><i class="fa-solid fa-gift"></i> Member First Recharge Bonus</div>
+
+        <!-- 500 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>500</span></div>
+                <div class="bonus-tag">+ ₹20.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 500 for the first time and you will receive 20 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/500</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+
+        <!-- 1000 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>1000</span></div>
+                <div class="bonus-tag">+ ₹50.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 1000 for the first time and you will receive 50 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/1000</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+
+        <!-- 3000 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>3000</span></div>
+                <div class="bonus-tag">+ ₹100.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 3000 for the first time and you will receive 100 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/3000</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+
+        <!-- 5000 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>5000</span></div>
+                <div class="bonus-tag">+ ₹300.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 5000 for the first time and you will receive 300 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/5000</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+
+        <!-- 10000 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>10000</span></div>
+                <div class="bonus-tag">+ ₹500.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 10000 for the first time and you will receive 500 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/10000</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+
+        <!-- 30000 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>30000</span></div>
+                <div class="bonus-tag">+ ₹1,000.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 30000 for the first time and you will receive 1000 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/30000</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+
+        <!-- 50000 Card -->
+        <div class="first-dep-card">
+            <div class="first-dep-header">
+                <div class="first-dep-title">First deposit <span>50000</span></div>
+                <div class="bonus-tag">+ ₹2,000.00</div>
+            </div>
+            <div class="first-dep-desc">Deposit 50000 for the first time and you will receive 2000 bonus</div>
+            <div class="first-dep-footer">
+                <div class="progress-box">0/50000</div>
+                <a href="deposit.html" class="dep-action-btn">Deposit</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Section -->
+    <div class="rules-box">
+        <div style="font-weight: bold; color: #38bdf8; margin-bottom: 5px; font-size: 13px;"><i class="fa-solid fa-circle-info"></i> Activity Rules</div>
+        <p style="margin: 4px 0;">• Har nayi first deposit par platform ki taraf se turant reward milega.</p>
+        <p style="margin: 4px 0;">• First recharge hone ke turant baad bonus automatic wallet me credit ho jayega.</p>
     </div>
 </div>
 
