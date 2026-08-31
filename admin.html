@@ -56,7 +56,7 @@
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Period-wise Crash Point Control</div>
         <div class="form-group">
-            <label>Target Period Number (Live Period Upar Dikhega):</label>
+            <label>Target Period Number:</label>
             <input type="text" id="targetPeriodInput" class="form-control" placeholder="jaise: 2097610105">
         </div>
         <div class="form-group">
@@ -147,7 +147,7 @@
 </div>
 
 <script>
-    const BIN_ID = "6a954a31f5f4af5e2957120c";
+    const BIN_ID = "6a956b28f5f4af5e29579654";
     const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -163,7 +163,6 @@
             let json = await res.json();
             let data = json.record;
 
-            // Display current active period from cloud
             if(data.currentPeriod) {
                 document.getElementById('adminPeriodDisplay').innerText = data.currentPeriod;
             }

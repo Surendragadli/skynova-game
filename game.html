@@ -88,7 +88,7 @@
 </div>
 
 <script>
-    const BIN_ID = "6a954a31f5f4af5e2957120c";
+    const BIN_ID = "6a956b28f5f4af5e29579654";
     const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
 
     let balance = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
@@ -200,10 +200,9 @@
         }
     }
 
-    // High performance smooth game engine
     function initGameEngine() {
-        const WAIT_TIME = 13; // 13 seconds waiting
-        const FLIGHT_TIME = 12; // 12 seconds flight
+        const WAIT_TIME = 13; 
+        const FLIGHT_TIME = 12; 
         const TOTAL_CYCLE = WAIT_TIME + FLIGHT_TIME;
 
         setInterval(async () => {
@@ -214,7 +213,6 @@
             let periodId = 2097610100 + Math.floor(nowSec / TOTAL_CYCLE);
             document.getElementById('periodNumber').innerText = periodId;
 
-            // Push current period to cloud so admin panel stays 100% in sync
             updateCloudPeriod(periodId);
 
             let multEl = document.getElementById('multiplier');
@@ -222,7 +220,6 @@
             let plane = document.getElementById('plane');
 
             if (cycleTime < WAIT_TIME) {
-                // WAITING PHASE (13 SECONDS)
                 multEl.innerText = "1.00x";
                 multEl.classList.remove('crashed');
                 plane.style.display = 'none';
@@ -241,7 +238,6 @@
                 }
 
             } else {
-                // FLIGHT PHASE
                 if (plane.style.display !== 'block') {
                     plane.style.display = 'block';
                     statusEl.innerText = "Fly away!";
@@ -259,11 +255,10 @@
                 let flightElapsed = cycleTime - WAIT_TIME;
                 let currentMult = 1.00 + (flightElapsed * 0.35);
 
-                // Check cloud period crash, if not set by admin, generate varied natural random crashes
                 let targetCrash = cloudPeriodCrashes[periodId.toString()] || cloudPeriodCrashes[periodId];
                 if (!targetCrash) {
                     let seed = periodId * 9301 + 49297;
-                    let randomVal = (seed % 700) / 100; // 0.00 to 7.00 range
+                    let randomVal = (seed % 700) / 100;
                     targetCrash = parseFloat((1.20 + randomVal).toFixed(2));
                 }
 
@@ -279,7 +274,6 @@
                 if (yPos > 120) yPos = 120;
                 plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(${22 - (flightElapsed * 1.2)}deg)`;
 
-                // Trigger Crash
                 if (currentMult >= targetCrash && lastProcessedPeriod !== periodId) {
                     lastProcessedPeriod = periodId;
                     triggerCrash(targetCrash, periodId);
