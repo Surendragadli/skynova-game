@@ -113,6 +113,23 @@
         document.getElementById('userBalance').innerText = balance.toFixed(2);
     }
 
+    async function pushPeriodToCloud(period) {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+            data.period = period;
+
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+        } catch(e) {}
+    }
+
     async function pushBetToCloud(amount) {
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
@@ -172,6 +189,7 @@
         gameState = 'waiting';
         currentPeriod++;
         document.getElementById('periodNumber').innerText = currentPeriod;
+        pushPeriodToCloud(currentPeriod);
 
         let timeLeft = 13; // 13 seconds waiting timer
         document.getElementById('multiplier').innerText = "1.00x";
@@ -206,7 +224,6 @@
             btn.setAttribute('onclick', 'cashOut()');
         }
 
-        // Fetch cloud crash override set by Admin
         let overrideCrash = 2.00;
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
