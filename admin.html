@@ -29,7 +29,6 @@
         .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
         .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
 
-        /* Tables Styling */
         .req-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         .req-table th { background-color: #1f293d; color: #38bdf8; padding: 10px; text-align: left; }
         .req-table td { padding: 10px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
@@ -48,7 +47,6 @@
 </header>
 
 <div class="container">
-    <!-- System Status Row -->
     <div class="stats-grid">
         <div class="stat-box">
             <div style="font-size: 11px; color: #94a3b8;">Status</div>
@@ -75,7 +73,7 @@
         <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
     </div>
 
-    <!-- Live Game Bets (Active Round) -->
+    <!-- Live Game Bets -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Current Round)</div>
         <div style="background: #0b0f19; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
@@ -99,7 +97,7 @@
         </div>
     </div>
 
-    <!-- Pending Deposit Requests -->
+    <!-- Deposit Requests -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-wallet"></i> User Deposit Requests (Pending)</div>
         <div style="overflow-x: auto;">
@@ -119,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Pending Withdrawal Requests -->
+    <!-- Withdrawal Requests -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> User Withdrawal Requests (Pending)</div>
         <div style="overflow-x: auto;">
@@ -139,7 +137,7 @@
         </div>
     </div>
 
-    <!-- Complete User History (Deposit & Withdrawal) -->
+    <!-- History -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History (All Records)</div>
         <div style="overflow-x: auto;">
@@ -372,6 +370,7 @@
         }
 
         let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
+        
         giftDb[code] = {
             amount: amount,
             maxUses: maxUses,
@@ -380,6 +379,10 @@
         };
 
         localStorage.setItem('skynova_gift_codes', JSON.stringify(giftDb));
+        
+        // Debug check
+        console.log("Updated Gift DB:", giftDb);
+
         document.getElementById('giftCodeInput').value = '';
         document.getElementById('giftAmountInput').value = '';
         alert(`Gift Code '${code}' (₹${amount}) successfully ban gaya hai!`);
