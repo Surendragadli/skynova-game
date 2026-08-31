@@ -7,7 +7,7 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 70px; }
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 90px; }
         header { background-color: #161e2e; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #1f293d; }
         .header-left { display: flex; align-items: center; gap: 10px; }
         .header-left img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #38bdf8; }
@@ -16,13 +16,12 @@
         
         .container { max-width: 500px; margin: 25px auto; padding: 10px; }
         .banner-card { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; padding: 40px 20px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
-        
-        /* Bada aur Attractive Play Button */
-        .play-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; padding: 16px 50px; font-size: 20px; font-weight: bold; border: none; border-radius: 35px; cursor: pointer; text-transform: uppercase; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); text-decoration: none; display: inline-block; margin-top: 25px; letter-spacing: 1px; transition: transform 0.2s; }
-        .play-btn:active { transform: scale(0.95); }
+        .play-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; padding: 16px 50px; font-size: 20px; font-weight: bold; border: none; border-radius: 35px; cursor: pointer; text-transform: uppercase; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); text-decoration: none; display: inline-block; margin-top: 25px; letter-spacing: 1px; }
 
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #1f293d; z-index: 50; }
-        .nav-item { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; }
+        /* Badi aur Behtar Navigation Bar (Jaise Refer Page Par Hai) */
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: bold; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+        .nav-item i { font-size: 20px; }
         .nav-item.active { color: #38bdf8; }
     </style>
 </head>
@@ -33,7 +32,7 @@
         <img src="logo.png" alt="Logo">
         <span>SkyNova</span>
     </div>
-    <div class="wallet-box">Bal: ₹<span id="userBalance">69.00</span></div>
+    <div class="wallet-box">Bal: ₹<span id="userBalance">326.10</span></div>
 </header>
 
 <div class="container">
@@ -45,14 +44,14 @@
 </div>
 
 <div class="navbar">
-    <a href="home.html" class="nav-item active">🏠 Home</a>
-    <a href="refer.html" class="nav-item">🎁 Refer & Earn</a>
-    <a href="account.html" class="nav-item">👤 Account</a>
+    <a href="home.html" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="refer.html" class="nav-item"><i class="fa-solid fa-gift"></i> Refer & Earn</a>
+    <a href="account.html" class="nav-item"><i class="fa-solid fa-user"></i> Account</a>
 </div>
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '69.00');
+        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
         document.getElementById('userBalance').innerText = currentBal.toFixed(2);
     });
 </script>
