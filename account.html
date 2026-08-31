@@ -7,7 +7,7 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; margin: 0; padding-bottom: 70px; }
+        body { font-family: Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; margin: 0; padding-bottom: 90px; }
         .top-uid-bar { background-color: #e11d48; color: white; padding: 10px 15px; text-align: center; font-size: 14px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .wallet-card { background: linear-gradient(135deg, #e11d48, #be123c); margin: 12px; padding: 20px; border-radius: 16px; color: white; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3); }
         .wallet-balance { font-size: 32px; font-weight: bold; margin: 8px 0; }
@@ -19,8 +19,11 @@
         .menu-left { display: flex; align-items: center; gap: 12px; }
         .logout-btn-container { margin: 15px 12px; }
         .logout-btn { background-color: white; color: #e11d48; border: 1px solid #e11d48; width: 100%; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #1f293d; z-index: 50; }
-        .nav-item { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; }
+
+        /* Badi aur Behtar Navigation Bar */
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: bold; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+        .nav-item i { font-size: 20px; }
         .nav-item.active { color: #38bdf8; }
     </style>
 </head>
@@ -65,9 +68,9 @@
 </div>
 
 <div class="navbar">
-    <a href="home.html" class="nav-item">🏠 Home</a>
-    <a href="refer.html" class="nav-item">🎁 Refer & Earn</a>
-    <a href="account.html" class="nav-item active">👤 Account</a>
+    <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="refer.html" class="nav-item"><i class="fa-solid fa-gift"></i> Refer & Earn</a>
+    <a href="account.html" class="nav-item active"><i class="fa-solid fa-user"></i> Account</a>
 </div>
 
 <script>
