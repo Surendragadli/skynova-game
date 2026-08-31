@@ -1,276 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skynova Account Page</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
+    <title>SkyNova - Account</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; margin: 0; padding-bottom: 70px; }
+        .top-uid-bar { background-color: #e11d48; color: white; padding: 8px 15px; text-align: center; font-size: 13px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .wallet-card { background: linear-gradient(135deg, #e11d48, #be123c); margin: 15px; padding: 20px; border-radius: 16px; color: white; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3); }
+        .wallet-balance { font-size: 32px; font-weight: bold; margin: 10px 0; }
+        .wallet-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .wallet-btn { background-color: white; color: #e11d48; border: none; padding: 12px 5px; border-radius: 12px; font-weight: bold; font-size: 13px; text-align: center; text-decoration: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .menu-container { margin: 15px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #1f2937; font-weight: 500; font-size: 14px; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-left { display: flex; align-items: center; gap: 12px; }
+        .logout-btn-container { margin: 20px 15px; }
+        .logout-btn { background-color: white; color: #e11d48; border: 1px solid #e11d48; width: 100%; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #1f293d; z-index: 50; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; }
+        .nav-item.active { color: #38bdf8; }
+    </style>
 </head>
-<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+<body>
 
-    <!-- Mobile Screen Container -->
-    <div class="w-full max-w-md bg-rose-500 min-h-screen flex flex-col relative overflow-hidden shadow-2xl pb-20">
-        
-        <!-- Top Profile Header Section -->
-        <div class="pt-8 pb-6 px-6 flex flex-col items-center text-white">
-            <div class="w-16 h-16 rounded-full bg-black border-2 border-yellow-400 flex items-center justify-center overflow-hidden shadow-lg mb-3">
-                <img src="logo.png" alt="Logo" class="w-full h-full object-cover">
-            </div>
-            <h1 class="text-xl font-bold tracking-wider">SKYNOVA</h1>
-            <!-- Unique UID (Auto generated) -->
-            <div class="mt-1 flex items-center gap-2 bg-black/15 px-3 py-1 rounded-full text-xs backdrop-blur-sm">
-                <span id="uidText">UID | 641435</span>
-                <i class="fa-regular fa-copy cursor-pointer text-gray-200 hover:text-white" onclick="copyUID()"></i>
-            </div>
-        </div>
+<div class="top-uid-bar">
+    <span>UID | <span id="userUid">221644</span></span>
+    <i class="fa-regular fa-copy" onclick="copyUid()" style="cursor: pointer;"></i>
+</div>
 
-        <!-- Main Content Area -->
-        <div class="flex-1 bg-gray-50 rounded-t-[35px] px-5 pt-6 pb-8 flex flex-col gap-4 shadow-inner">
-            
-            <!-- Balance & Actions Card -->
-            <div class="bg-gradient-to-r from-rose-400 to-rose-500 rounded-2xl p-5 text-white shadow-md -mt-12">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                    <span id="langBalance" class="text-xs font-medium uppercase tracking-wide opacity-90">balance</span>
-                </div>
-                <!-- Synchronized Balance Field -->
-                <div class="text-3xl font-bold tracking-tight mb-5">₹ <span id="accountBalance">69.00</span></div>
-
-                <!-- Action Buttons (Deposit & Withdraw Linked) -->
-                <div class="grid grid-cols-3 gap-3">
-                    <a href="deposit.html" class="bg-white/90 hover:bg-white text-rose-600 rounded-xl py-3 flex flex-col items-center justify-center gap-1.5 shadow transition active:scale-95 no-underline">
-                        <i class="fa-solid fa-wallet text-lg"></i>
-                        <span id="langDeposit" class="text-xs font-semibold">Deposit</span>
-                    </a>
-                    <a href="withdraw.html" class="bg-white/90 hover:bg-white text-rose-600 rounded-xl py-3 flex flex-col items-center justify-center gap-1.5 shadow transition active:scale-95 no-underline">
-                        <i class="fa-solid fa-wallet text-lg"></i>
-                        <span id="langWithdraw" class="text-xs font-semibold">Withdraw</span>
-                    </a>
-                    <!-- Telegram Group Link -->
-                    <a href="https://t.me/skynovaa11" target="_blank" class="bg-white/90 hover:bg-white text-rose-600 rounded-xl py-3 flex flex-col items-center justify-center gap-1.5 shadow transition active:scale-95 no-underline">
-                        <i class="fa-brands fa-telegram text-xl"></i>
-                        <span id="langTelegram" class="text-xs font-semibold">Telegram</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Gift & Language Options -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <!-- Gift Exchange Modal Opener -->
-                <div onclick="openGiftModal()" class="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center">
-                            <i class="fa-solid fa-gift text-sm"></i>
-                        </div>
-                        <span id="langGift" class="text-sm font-medium text-gray-800">gift exchange</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
-                </div>
-
-                <!-- Language Toggle (EN / HI) -->
-                <div onclick="toggleLanguage()" class="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer transition">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center">
-                            <i class="fa-solid fa-globe text-sm"></i>
-                        </div>
-                        <span id="langChangeText" class="text-sm font-medium text-gray-800">language change</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span id="currentLangLabel" class="text-xs font-semibold text-rose-600">EN</span>
-                        <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Service Center Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                <h2 id="langServiceCenter" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Service center</h2>
-                <!-- Customer Service Telegram Bot Link -->
-                <a href="https://t.me/Skynovaa1_bot" target="_blank" class="flex flex-col items-center justify-center py-2 hover:bg-gray-50 rounded-xl cursor-pointer transition no-underline">
-                    <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mb-1">
-                        <i class="fa-solid fa-headset text-lg"></i>
-                    </div>
-                    <span id="langCustomerService" class="text-xs font-medium text-gray-700">Customer Service</span>
-                </a>
-            </div>
-
-            <!-- Log Out Button -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mt-auto">
-                <button onclick="handleLogout()" class="w-full py-3.5 flex items-center justify-center gap-2 text-rose-600 font-semibold text-sm hover:bg-rose-50/50 rounded-2xl transition">
-                    <i class="fa-solid fa-power-off"></i>
-                    <span id="langLogout">log out</span>
-                </button>
-            </div>
-
-        </div>
-
-        <!-- Bottom Navigation Bar (Home, Game, Refer & Earn, Account) -->
-        <div class="absolute bottom-0 left-0 right-0 bg-gray-900 text-white flex justify-around py-3 border-t border-gray-800 z-50">
-            <a href="home.html" class="flex flex-col items-center text-gray-400 hover:text-rose-500 text-xs transition">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="mt-1">Home</span>
-            </a>
-            <a href="game.html" class="flex flex-col items-center text-gray-400 hover:text-rose-500 text-xs transition">
-                <i class="fa-solid fa-gamepad text-lg"></i>
-                <span class="mt-1">Game</span>
-            </a>
-            <a href="refer.html" class="flex flex-col items-center text-gray-400 hover:text-rose-500 text-xs transition">
-                <i class="fa-solid fa-gift text-lg"></i>
-                <span class="mt-1">Refer & Earn</span>
-            </a>
-            <a href="account.html" class="flex flex-col items-center text-rose-500 text-xs transition">
-                <i class="fa-solid fa-user text-lg"></i>
-                <span class="mt-1">Account</span>
-            </a>
-        </div>
+<div class="wallet-card">
+    <div style="font-size: 13px; opacity: 0.9;"><i class="fa-solid fa-wallet"></i> BALANCE</div>
+    <div class="wallet-balance">₹<span id="userBalance">326.10</span></div>
+    <div class="wallet-actions">
+        <a href="deposit.html" class="wallet-btn"><i class="fa-solid fa-wallet text-lg"></i> Deposit</a>
+        <a href="withdraw.html" class="wallet-btn"><i class="fa-solid fa-money-bill-transfer text-lg"></i> Withdraw</a>
+        <a href="https://telegram.org" target="_blank" class="wallet-btn"><i class="fa-brands fa-telegram text-lg"></i> Telegram</a>
     </div>
+</div>
 
-    <!-- Gift Exchange Modal -->
-    <div id="giftModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-lg font-bold text-gray-800">Gift Exchange</h3>
-                <button onclick="closeGiftModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <p id="modalDesc" class="text-xs text-gray-500 mb-4">Enter your bonus code below to claim your reward.</p>
-            <input type="text" id="giftCodeInput" placeholder="Enter gift code..." class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 mb-4 uppercase font-semibold">
-            <div class="flex gap-3">
-                <button onclick="closeGiftModal()" id="modalCancel" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl text-sm font-semibold">Cancel</button>
-                <button onclick="claimGiftCode()" id="modalClaim" class="flex-1 bg-rose-500 text-white py-3 rounded-xl text-sm font-semibold">Claim</button>
-            </div>
-        </div>
-    </div>
+<div class="menu-container">
+    <a href="#" class="menu-item" onclick="openGiftModal(event)">
+        <div class="menu-left"><i class="fa-solid fa-gift text-rose-500"></i> gift exchange</div>
+        <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
+    </a>
+    <a href="#" class="menu-item">
+        <div class="menu-left"><i class="fa-solid fa-globe text-rose-500"></i> language change</div>
+        <span style="color: #e11d48; font-weight: bold; font-size: 13px;">EN</span>
+    </a>
+</div>
 
-    <!-- JavaScript Logic -->
-    <script>
-        // Unique UID and Live Balance Sync
-        window.addEventListener('DOMContentLoaded', () => {
-            let userUID = localStorage.getItem('skynova_user_uid');
-            if (!userUID) {
-                userUID = Math.floor(100000 + Math.random() * 900000);
-                localStorage.setItem('skynova_user_uid', userUID);
+<div class="menu-container">
+    <div style="padding: 12px 20px; font-size: 12px; color: #9ca3af; font-weight: bold; border-bottom: 1px solid #f3f4f6;">SERVICE CENTER</div>
+    <a href="#" class="menu-item" onclick="alert('Customer Service: Contact via Telegram channel.')">
+        <div class="menu-left"><i class="fa-solid fa-headset text-rose-500"></i> Customer Service</div>
+        <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
+    </a>
+</div>
+
+<div class="logout-btn-container">
+    <button class="logout-btn" onclick="logoutUser()"><i class="fa-solid fa-power-off"></i> log out</button>
+</div>
+
+<div class="navbar">
+    <a href="home.html" class="nav-item">🏠 Home</a>
+    <a href="refer.html" class="nav-item">🎁 Refer & Earn</a>
+    <a href="account.html" class="nav-item active">👤 Account</a>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
+        document.getElementById('userBalance').innerText = currentBal.toFixed(2);
+
+        let savedUid = localStorage.getItem('skynova_uid');
+        if(!savedUid) {
+            savedUid = Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('skynova_uid', savedUid);
+        }
+        document.getElementById('userUid').innerText = savedUid;
+    });
+
+    function copyUid() {
+        let uid = document.getElementById('userUid').innerText;
+        navigator.clipboard.writeText(uid);
+        alert("UID Successfully Copied: " + uid);
+    }
+
+    function openGiftModal(e) {
+        e.preventDefault();
+        let code = prompt("Kripya Gift Code enter karein:");
+        if(!code) return;
+        code = code.trim().toUpperCase();
+
+        let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
+        if(giftDb[code]) {
+            let gift = giftDb[code];
+            if(gift.claimedUsers && gift.claimedUsers.includes(localStorage.getItem('skynova_uid'))) {
+                alert("Aap ye gift code pehle hi claim kar chuke hain!");
+                return;
             }
-            document.getElementById('uidText').innerText = `UID | ${userUID}`;
-
-            // Sync balance from localStorage (`skynova_balance`)
-            let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '69.00');
-            document.getElementById('accountBalance').innerText = currentBal.toFixed(2);
-        });
-
-        function copyUID() {
-            let uidText = document.getElementById('uidText').innerText.replace('UID | ', '');
-            navigator.clipboard.writeText(uidText);
-            alert('UID Copied: ' + uidText);
-        }
-
-        // Modal Functions for Gift Exchange
-        function openGiftModal() {
-            document.getElementById('giftModal').classList.remove('hidden');
-            document.getElementById('giftModal').classList.add('flex');
-        }
-        function closeGiftModal() {
-            document.getElementById('giftModal').classList.remove('flex');
-            document.getElementById('giftModal').classList.add('hidden');
-        }
-
-        // Functional Gift Code Claim Logic with Usage Limit & Per-User Check
-        function claimGiftCode() {
-            let code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
-            let userUID = localStorage.getItem('skynova_user_uid') || '641435';
-
-            if(!code) { 
-                alert("Kripya gift code enter karein!"); 
-                return; 
-            }
-
-            let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
-            
-            if(!giftDb[code]) {
-                alert("Yeh gift code galat hai ya expire ho chuka hai!");
+            if(gift.usedCount >= gift.maxUses) {
+                alert("Ye gift code expired ho chuka hai ya limit poori ho gayi hai!");
                 return;
             }
 
-            let giftData = giftDb[code];
-            let rewardAmount = typeof giftData === 'object' ? giftData.amount : giftData;
-            let maxUses = typeof giftData === 'object' ? giftData.maxUses : 1;
-            let usedCount = typeof giftData === 'object' ? giftData.usedCount : 0;
-            let claimedUsers = typeof giftData === 'object' ? (giftData.claimedUsers || []) : [];
-
-            // Check if user already claimed this code
-            if(claimedUsers.includes(userUID)) {
-                alert("Aap is gift code ko pehle hi use kar chuke hain!");
-                return;
-            }
-
-            // Check if usage limit reached
-            if(typeof giftData === 'object' && usedCount >= maxUses) {
-                alert("Is gift code ki use limit khatam ho chuki hai!");
-                return;
-            }
-
-            // Add money to synchronized balance
-            let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '69.00');
-            let newBal = currentBal + rewardAmount;
-            localStorage.setItem('skynova_balance', newBal.toFixed(2));
-
-            // Update usage tracking
-            if(typeof giftData === 'object') {
-                giftData.usedCount++;
-                giftData.claimedUsers.push(userUID);
-                giftDb[code] = giftData;
-                
-                if(giftData.usedCount >= giftData.maxUses) {
-                    delete giftDb[code];
-                }
-            } else {
-                delete giftDb[code];
-            }
-
+            gift.usedCount++;
+            if(!gift.claimedUsers) gift.claimedUsers = [];
+            gift.claimedUsers.push(localStorage.getItem('skynova_uid'));
             localStorage.setItem('skynova_gift_codes', JSON.stringify(giftDb));
 
-            alert(`Badhai ho! ₹${rewardAmount} successfully aapke account me add ho gaye hain!`);
-            document.getElementById('accountBalance').innerText = newBal.toFixed(2);
-            document.getElementById('giftCodeInput').value = '';
-            closeGiftModal();
-        }
+            let bal = parseFloat(localStorage.getItem('skynova_balance') || '0');
+            bal += gift.amount;
+            localStorage.setItem('skynova_balance', bal.toFixed(2));
 
-        // Language Translation (English & Hindi)
-        let currentLang = 'EN';
-        const translations = {
-            EN: { 
-                balance: "balance", deposit: "Deposit", withdraw: "Withdraw", telegram: "Telegram", 
-                gift: "gift exchange", changeLang: "language change", serviceCenter: "Service center", 
-                customerService: "Customer Service", logout: "log out" 
-            },
-            HI: { 
-                balance: "बैलेंस", deposit: "डिपॉजिट", withdraw: "विथड्रॉ", telegram: "टेलीग्राम", 
-                gift: "गिफ्ट एक्सचेंज", changeLang: "भाषा बदलें", serviceCenter: "सर्विस सेंटर", 
-                customerService: "कस्टमर सर्विस", logout: "लॉग आउट" 
-            }
-        };
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'EN' ? 'HI' : 'EN';
-            document.getElementById('currentLangLabel').innerText = currentLang;
-            let t = translations[currentLang];
-            document.getElementById('langBalance').innerText = t.balance;
-            document.getElementById('langDeposit').innerText = t.deposit;
-            document.getElementById('langWithdraw').innerText = t.withdraw;
-            document.getElementById('langTelegram').innerText = t.telegram;
-            document.getElementById('langGift').innerText = t.gift;
-            document.getElementById('langChangeText').innerText = t.changeLang;
-            document.getElementById('langServiceCenter').innerText = t.serviceCenter;
-            document.getElementById('langCustomerService').innerText = t.customerService;
-            document.getElementById('langLogout').innerText = t.logout;
+            document.getElementById('userBalance').innerText = bal.toFixed(2);
+            alert(`Badhai ho! ₹${gift.amount} successfully aapke account me add ho gaye hain!`);
+        } else {
+            alert("Galat ya invalid gift code!");
         }
+    }
 
-        function handleLogout() {
-            alert("Logged out successfully!");
-            window.location.href = 'index.html';
+    function logoutUser() {
+        if(confirm("Kya aap log out karna chahte hain?")) {
+            window.location.href = "index.html";
         }
-    </script>
+    }
+</script>
 </body>
 </html>
