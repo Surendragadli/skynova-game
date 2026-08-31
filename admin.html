@@ -3,310 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyNova - Cloud Admin Panel</title>
+    <title>SkyNova - Aviator Cloud Game</title>
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 50px; }
-        header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
-        .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
-        .container { max-width: 850px; margin: 15px auto; padding: 10px; }
-        .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .card-title { font-size: 16px; font-weight: bold; color: #38bdf8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
-        .form-control { width: 100%; background-color: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; outline: none; box-sizing: border-box; }
-        .form-control:focus { border-color: #38bdf8; }
-        .btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; width: 100%; }
-        .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
-        .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
-        .req-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .req-table th { background-color: #1f293d; color: #38bdf8; padding: 10px; text-align: left; }
-        .req-table td { padding: 10px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
-        .action-btns { display: flex; gap: 5px; }
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 90px; }
+        header { background-color: #161e2e; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #1f293d; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .header-left img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #38bdf8; }
+        .header-left span { font-size: 18px; font-weight: bold; color: #38bdf8; }
+        .wallet-box { background-color: #0b0f19; padding: 6px 14px; border-radius: 20px; border: 1px solid #38bdf8; font-size: 14px; color: #38bdf8; font-weight: bold; }
+        
+        .game-container { max-width: 500px; margin: 15px auto; padding: 10px; }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; color: #94a3b8; font-weight: bold; }
+        .history-bar { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; margin-bottom: 12px; white-space: nowrap; }
+        .history-pill { background: #161e2e; border: 1px solid #334155; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #38bdf8; }
+
+        .game-screen { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
+        .multiplier-display { font-size: 45px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); z-index: 2; }
+        .status-text { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; z-index: 2; }
+        .plane-icon { position: absolute; font-size: 35px; color: #f59e0b; bottom: 40px; left: 30px; z-index: 1; display: none; will-change: transform; }
+
+        .betting-panel { background-color: #161e2e; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .input-group { display: flex; gap: 10px; margin-bottom: 12px; }
+        .bet-input { flex: 1; background: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 16px; font-weight: bold; outline: none; }
+        .quick-btn-row { display: flex; gap: 5px; margin-bottom: 15px; }
+        .quick-btn { flex: 1; background: #0b0f19; border: 1px solid #334155; color: #cbd5e1; padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        
+        .action-btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-bet { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+        .btn-cashout { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; display: none; }
+
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: bold; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+        .nav-item.active { color: #38bdf8; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand"><i class="fa-solid fa-shield-halved"></i> SkyNova Cloud Admin Panel</div>
-    <a href="home.html" style="color: #f59e0b; text-decoration: none; font-size: 14px; font-weight: bold;"><i class="fa-solid fa-house"></i> Home</a>
+    <div class="header-left">
+        <img src="logo.png" alt="Logo">
+        <span>SkyNova Aviator</span>
+    </div>
+    <div class="wallet-box">Bal: ₹<span id="userBalance">326.10</span></div>
 </header>
 
-<div class="container">
-    <div class="stats-grid">
-        <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Current Period</div>
-            <div class="stat-val" id="adminPeriodDisplay" style="color: #38bdf8; font-size: 15px;">Loading...</div>
-        </div>
-        <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Pending Dep.</div>
-            <div class="stat-val" id="pendingDepCount">0</div>
-        </div>
-        <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Pending With.</div>
-            <div class="stat-val" id="pendingWithCount">0</div>
-        </div>
+<div class="game-container">
+    <div class="info-bar">
+        <span>Period: <b id="periodNumber" style="color: #38bdf8;">2026083101</b></span>
+        <span>History:</span>
+    </div>
+    <div class="history-bar" id="historyBar">
+        <div class="history-pill">1.45x</div>
+        <div class="history-pill">2.10x</div>
     </div>
 
-    <!-- Period-wise Crash Point Control -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Period-wise Crash Point Control</div>
-        <div class="form-group">
-            <label>Target Period Number:</label>
-            <input type="text" id="targetPeriodInput" class="form-control" placeholder="jaise: 2026083105">
-        </div>
-        <div class="form-group">
-            <label>Crash Multiplier (Kitne guna par crash hoga):</label>
-            <input type="number" step="0.01" id="targetCrashInput" class="form-control" placeholder="jaise: 3.50">
-        </div>
-        <button class="btn btn-success" onclick="setPeriodCrash()">Is Period ke liye Crash Set Karein</button>
-        <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
+    <div class="game-screen">
+        <div id="multiplier" class="multiplier-display">1.00x</div>
+        <div id="gameStatus" class="status-text">Waiting for next round...</div>
+        <i id="plane" class="fa-solid fa-rocket plane-icon" style="transform: translate(0px, 0px) rotate(0deg);"></i>
     </div>
 
-    <!-- Live Game Bets -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Current Round)</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr><th>UID</th><th>Bet Amount</th><th>Panel</th><th>Status</th></tr>
-                </thead>
-                <tbody id="liveBetsTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading live bets...</td></tr>
-                </tbody>
-            </table>
+    <div class="betting-panel">
+        <div class="input-group">
+            <input type="number" id="betAmount" class="bet-input" value="100" min="10">
         </div>
+        <div class="quick-btn-row">
+            <button class="quick-btn" onclick="setBet(50)">+50</button>
+            <button class="quick-btn" onclick="setBet(100)">+100</button>
+            <button class="quick-btn" onclick="setBet(500)">+500</button>
+            <button class="quick-btn" onclick="setBet(1000)">+1000</button>
+        </div>
+        <button id="actionBtn" class="action-btn btn-bet" onclick="handleBetAction()">PLACE BET</button>
     </div>
+</div>
 
-    <!-- Pending Deposit Requests -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-wallet"></i> User Deposit Requests (Pending)</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr><th>UID</th><th>Amount</th><th>UTR / Ref</th><th>Action</th></tr>
-                </thead>
-                <tbody id="depositTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading deposits...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Pending Withdrawal Requests -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> User Withdrawal Requests (Pending)</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr><th>UID</th><th>Amount</th><th>Details (UPI/Bank)</th><th>Action</th></tr>
-                </thead>
-                <tbody id="withdrawalTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading withdrawals...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- User History -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr><th>UID</th><th>Type</th><th>Amount</th><th>Status</th></tr>
-                </thead>
-                <tbody id="historyTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading history...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Gift Code Creator (Max uses added back) -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
-        <div class="form-group">
-            <label>Gift Code Name:</label>
-            <input type="text" id="giftCodeInput" class="form-control" placeholder="BONUS100">
-        </div>
-        <div class="form-group">
-            <label>Bonus Amount (₹):</label>
-            <input type="number" id="giftAmountInput" class="form-control" placeholder="100">
-        </div>
-        <div class="form-group">
-            <label>Max Uses (Kitne log use kar sakte hain):</label>
-            <input type="number" id="giftMaxUsesInput" class="form-control" value="50">
-        </div>
-        <button class="btn" onclick="createGiftCodeCloud()">Cloud Par Gift Code Banayein</button>
-    </div>
+<div class="navbar">
+    <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="refer.html" class="nav-item"><i class="fa-solid fa-gift"></i> Refer & Earn</a>
+    <a href="account.html" class="nav-item"><i class="fa-solid fa-user"></i> Account</a>
 </div>
 
 <script>
     const BIN_ID = "6a954a31f5f4af5e2957120c";
     const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
 
-    window.addEventListener('DOMContentLoaded', () => {
-        fetchCloudData();
-        setInterval(fetchCloudData, 2000);
-    });
+    let balance = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
+    let uid = localStorage.getItem('skynova_uid' || '794973');
+    document.getElementById('userBalance').innerText = balance.toFixed(2);
 
-    async function fetchCloudData() {
+    let gameState = 'waiting'; 
+    let currentMultiplier = 1.00;
+    let betPlaced = false;
+    let activeBetAmount = 0;
+    let historyList = JSON.parse(localStorage.getItem('skynova_game_history') || '["1.45x", "2.10x"]');
+    let cloudPeriodCrashes = {};
+
+    updateHistoryUI();
+
+    async function fetchPeriodCrashes() {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            cloudPeriodCrashes = json.record.periodCrashes || {};
+        } catch(e) {}
+    }
+
+    function setBet(amount) {
+        let current = parseFloat(document.getElementById('betAmount').value || 0);
+        document.getElementById('betAmount').value = current + amount;
+    }
+
+    function updateBalance(newBal) {
+        balance = newBal;
+        localStorage.setItem('skynova_balance', balance.toFixed(2));
+        document.getElementById('userBalance').innerText = balance.toFixed(2);
+    }
+
+    function updateHistoryUI() {
+        let bar = document.getElementById('historyBar');
+        bar.innerHTML = historyList.map(h => `<div class="history-pill">${h}</div>`).join('');
+    }
+
+    async function pushBetToCloud(amount) {
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { 'X-Master-Key': API_KEY }
             });
             let json = await res.json();
             let data = json.record;
+
+            if(!data.bets) data.bets = [];
+            data.bets.push({ uid: uid, amount: amount, panel: 1, status: 'Active' });
+
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+        } catch(e) {}
+    }
+
+    async function clearCloudBets() {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+            data.bets = [];
+
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+        } catch(e) {}
+    }
+
+    function handleBetAction() {
+        let amount = parseFloat(document.getElementById('betAmount').value);
+        if(isNaN(amount) || amount <= 0) { alert("Valid amount dalein!"); return; }
+
+        if(!betPlaced) {
+            if(balance < amount) { alert("Balance kam hai!"); return; }
+            updateBalance(balance - amount);
+            betPlaced = true;
+            activeBetAmount = amount;
+
+            let btn = document.getElementById('actionBtn');
+            btn.innerText = "WAITING FOR ROUND";
+            btn.style.background = "#64748b";
+            btn.disabled = true;
+
+            pushBetToCloud(amount);
+        }
+    }
+
+    function runContinuousGameLoop() {
+        setInterval(async () => {
+            fetchPeriodCrashes();
 
             let now = Math.floor(Date.now() / 1000);
-            let periodId = 2026083100 + Math.floor(now / 25);
-            document.getElementById('adminPeriodDisplay').innerText = periodId;
+            let totalCycle = 25; // 13s wait + 12s flight
+            let cycleTime = now % totalCycle; 
+            let periodId = 2026083100 + Math.floor(now / totalCycle);
+            document.getElementById('periodNumber').innerText = periodId;
 
-            let bets = data.bets || [];
-            let totalAmt = 0;
-            let betsHtml = '';
-            if(bets.length === 0) {
-                betsHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi live bet nahi hai.</td></tr>`;
+            if(cycleTime < 13) {
+                if(gameState !== 'waiting') {
+                    gameState = 'waiting';
+                    document.getElementById('multiplier').innerText = "1.00x";
+                    let plane = document.getElementById('plane');
+                    plane.style.display = 'none';
+                    plane.style.transform = `translate(0px, 0px) rotate(0deg)`;
+
+                    if(betPlaced && gameState === 'crashed') {
+                        betPlaced = false;
+                        let btn = document.getElementById('actionBtn');
+                        btn.innerText = "PLACE BET";
+                        btn.className = "action-btn btn-bet";
+                        btn.disabled = false;
+                        btn.setAttribute('onclick', 'handleBetAction()');
+                    }
+                }
+                let timeLeft = 13 - cycleTime;
+                document.getElementById('gameStatus').innerText = `Next round starts in ${timeLeft}s...`;
+
             } else {
-                bets.forEach(b => {
-                    totalAmt += parseFloat(b.amount || 0);
-                    betsHtml += `<tr><td><b>${b.uid}</b></td><td style="color:#38bdf8;">₹${b.amount}</td><td>Panel ${b.panel}</td><td style="color:#fbbf24;">Active</td></tr>`;
-                });
+                if(gameState === 'waiting') {
+                    gameState = 'running';
+                    currentMultiplier = 1.00;
+                    document.getElementById('gameStatus').innerText = "Fly away!";
+                    let plane = document.getElementById('plane');
+                    plane.style.display = 'block';
+
+                    if(betPlaced) {
+                        let btn = document.getElementById('actionBtn');
+                        btn.innerText = "CASH OUT";
+                        btn.className = "action-btn btn-cashout";
+                        btn.style.display = "block";
+                        btn.disabled = false;
+                        btn.setAttribute('onclick', 'cashOut()');
+                    }
+                }
+
+                let flightElapsed = cycleTime - 13;
+                currentMultiplier = 1.00 + (flightElapsed * 0.25);
+                document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
+
+                let xPos = 30 + (flightElapsed * 18);
+                let yPos = flightElapsed * 9;
+                if(xPos > 220) xPos = 220;
+                if(yPos > 110) yPos = 110;
+                let plane = document.getElementById('plane');
+                plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(25deg)`;
+
+                let targetCrash = cloudPeriodCrashes[periodId] || 3.00;
+
+                if((currentMultiplier >= targetCrash || cycleTime >= 24) && gameState === 'running') {
+                    triggerCrash(targetCrash);
+                }
             }
-            document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
-
-            let deposits = data.deposits || [];
-            let pendingDeps = deposits.filter(d => d.status === 'Pending');
-            document.getElementById('pendingDepCount').innerText = pendingDeps.length;
-            let depHtml = pendingDeps.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending deposit nahi hai.</td></tr>` :
-                pendingDeps.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#4ade80;">₹${item.amount}</td><td>${item.utr || 'N/A'}</td><td><div class="action-btns"><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('deposits', ${item.id}, 'Approved')">Approve</button><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('deposits', ${item.id}, 'Rejected')">Reject</button></div></td></tr>`).join('');
-            document.getElementById('depositTableBody').innerHTML = depHtml;
-
-            let withdrawals = data.withdrawals || [];
-            let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
-            document.getElementById('pendingWithCount').innerText = pendingWiths.length;
-            let withHtml = pendingWiths.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending withdrawal nahi hai.</td></tr>` :
-                pendingWiths.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#ef4444;">₹${item.amount}</td><td>${item.details || 'UPI'}</td><td><div class="action-btns"><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('withdrawals', ${item.id}, 'Approved')">Approve</button><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('withdrawals', ${item.id}, 'Rejected')">Reject</button></div></td></tr>`).join('');
-            document.getElementById('withdrawalTableBody').innerHTML = withHtml;
-
-            let allHistory = [];
-            deposits.forEach(d => allHistory.push({ uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id || 0 }));
-            withdrawals.forEach(w => allHistory.push({ uid: w.uid, type: 'Withdrawal', amount: w.amount, status: w.status, time: w.id || 0 }));
-            allHistory.sort((a, b) => b.time - a.time);
-
-            let historyHtml = '';
-            if(allHistory.length === 0) {
-                historyHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi tak koi history nahi hai.</td></tr>`;
-            } else {
-                allHistory.forEach(h => {
-                    let badgeColor = h.status === 'Approved' ? 'color: #4ade80;' : (h.status === 'Rejected' ? 'color: #ef4444;' : 'color: #fbbf24;');
-                    let typeColor = h.type === 'Deposit' ? 'color: #4ade80;' : 'color: #ef4444;';
-                    historyHtml += `<tr><td><b>${h.uid}</b></td><td><span style="${typeColor} font-weight: bold;">${h.type}</span></td><td>₹${h.amount}</td><td><span style="${badgeColor} font-weight: bold;">${h.status}</span></td></tr>`;
-                });
-            }
-            document.getElementById('historyTableBody').innerHTML = historyHtml;
-
-        } catch(e) {}
+        }, 200);
     }
 
-    async function setPeriodCrash() {
-        let period = document.getElementById('targetPeriodInput').value.trim();
-        let crashVal = parseFloat(document.getElementById('targetCrashInput').value);
+    function cashOut() {
+        if(!betPlaced || gameState !== 'running') return;
+        let winAmount = activeBetAmount * currentMultiplier;
+        updateBalance(balance + winAmount);
+        alert(`Badhai ho! ₹${winAmount.toFixed(2)} jeet liye!`);
 
-        if(!period || isNaN(crashVal) || crashVal < 1.00) {
-            alert("Kripya valid period aur multiplier dalein!");
-            return;
-        }
-
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let json = await res.json();
-            let data = json.record;
-
-            if(!data.periodCrashes) data.periodCrashes = {};
-            data.periodCrashes[period] = crashVal;
-
-            let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(data)
-            });
-
-            if(updateRes.ok) {
-                document.getElementById('crashStatusMsg').innerText = `Period ${period} -> ${crashVal}x set ho gaya!`;
-                alert(`Period ${period} ke liye crash multiplier ${crashVal}x successfully set ho gaya hai!`);
-            }
-        } catch(e) {
-            alert("Error setting period crash.");
-        }
+        betPlaced = false;
+        let btn = document.getElementById('actionBtn');
+        btn.innerText = "PLACE BET";
+        btn.className = "action-btn btn-bet";
+        btn.setAttribute('onclick', 'handleBetAction()');
+        clearCloudBets();
     }
 
-    async function updateReqStatus(type, id, status) {
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let json = await res.json();
-            let data = json.record;
-            
-            let list = data[type] || [];
-            let req = list.find(item => item.id === id);
-            if(req) {
-                req.status = status;
-                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                    body: JSON.stringify(data)
-                });
-                alert(`Request ${status} successfully!`);
-                fetchCloudData();
-            }
-        } catch(e) {}
-    }
+    function triggerCrash(crashVal) {
+        gameState = 'crashed';
+        let finalStr = crashVal.toFixed(2) + 'x';
+        document.getElementById('multiplier').innerText = finalStr;
+        document.getElementById('gameStatus').innerText = "CRASHED!";
+        document.getElementById('plane').style.display = 'none';
 
-    async function createGiftCodeCloud() {
-        let code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
-        let amount = parseFloat(document.getElementById('giftAmountInput').value);
-        let maxUses = parseInt(document.getElementById('giftMaxUsesInput').value || '50');
+        historyList.unshift(finalStr);
+        if(historyList.length > 10) historyList.pop();
+        localStorage.setItem('skynova_game_history', JSON.stringify(historyList));
+        updateHistoryUI();
 
-        if(!code || isNaN(amount) || amount <= 0) {
-            alert("Sahi details bharein!");
-            return;
+        if(betPlaced) {
+            betPlaced = false;
+            alert("Aapka bet haar gaya! Rocket crash ho gaya.");
         }
 
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let json = await res.json();
-            let data = json.record;
+        let btn = document.getElementById('actionBtn');
+        btn.innerText = "PLACE BET";
+        btn.className = "action-btn btn-bet";
+        btn.style.display = "block";
+        btn.disabled = false;
+        btn.setAttribute('onclick', 'handleBetAction()');
 
-            if(!data.gifts) data.gifts = {};
-            data.gifts[code] = { amount: amount, maxUses: maxUses, usedCount: 0, claimedUsers: [] };
-
-            let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(data)
-            });
-
-            if(updateRes.ok) {
-                document.getElementById('giftCodeInput').value = '';
-                document.getElementById('giftAmountInput').value = '';
-                document.getElementById('giftMaxUsesInput').value = '50';
-                alert(`Gift Code '${code}' (₹${amount}, Max Uses: ${maxUses}) successfully ban gaya hai!`);
-            }
-        } catch(e) {
-            alert("Error creating gift code.");
-        }
+        clearCloudBets();
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchPeriodCrashes();
+        runContinuousGameLoop();
+    });
 </script>
 </body>
 </html>
