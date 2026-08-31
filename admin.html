@@ -123,7 +123,7 @@
         </div>
     </div>
 
-    <!-- Gift Code Creator -->
+    <!-- Gift Code Creator (Max uses removed) -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
         <div class="form-group">
@@ -144,7 +144,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         fetchCloudData();
-        setInterval(fetchCloudData, 2000); // Har 2 second me auto-sync
+        setInterval(fetchCloudData, 2000);
     });
 
     async function fetchCloudData() {
@@ -159,7 +159,6 @@
                 document.getElementById('crashInput').value = data.crash;
             }
 
-            // Live Bets
             let bets = data.bets || [];
             let totalAmt = 0;
             let betsHtml = '';
@@ -174,7 +173,6 @@
             document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
             document.getElementById('totalLiveBetAmount').innerText = `₹${totalAmt.toFixed(2)}`;
 
-            // Deposits
             let deposits = data.deposits || [];
             let pendingDeps = deposits.filter(d => d.status === 'Pending');
             document.getElementById('pendingDepCount').innerText = pendingDeps.length;
@@ -182,7 +180,6 @@
                 pendingDeps.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#4ade80;">₹${item.amount}</td><td>${item.utr || 'N/A'}</td><td><div class="action-btns"><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('deposits', ${item.id}, 'Approved')">Approve</button><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('deposits', ${item.id}, 'Rejected')">Reject</button></div></td></tr>`).join('');
             document.getElementById('depositTableBody').innerHTML = depHtml;
 
-            // Withdrawals
             let withdrawals = data.withdrawals || [];
             let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
             document.getElementById('pendingWithCount').innerText = pendingWiths.length;
@@ -190,7 +187,6 @@
                 pendingWiths.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#ef4444;">₹${item.amount}</td><td>${item.details || 'UPI'}</td><td><div class="action-btns"><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('withdrawals', ${item.id}, 'Approved')">Approve</button><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('withdrawals', ${item.id}, 'Rejected')">Reject</button></div></td></tr>`).join('');
             document.getElementById('withdrawalTableBody').innerHTML = withHtml;
 
-            // Complete History (Deposits + Withdrawals)
             let allHistory = [];
             deposits.forEach(d => allHistory.push({ uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id || 0 }));
             withdrawals.forEach(w => allHistory.push({ uid: w.uid, type: 'Withdrawal', amount: w.amount, status: w.status, time: w.id || 0 }));
@@ -282,7 +278,8 @@
             let data = json.record;
 
             if(!data.gifts) data.gifts = {};
-            data.gifts[code] = { amount: amount, maxUses: 50, usedCount: 0, claimedUsers: [] };
+            // Max uses check hata diya gaya hai, ab sirf code aur amount save hoga
+            data.gifts[code] = { amount: amount, claimedUsers: [] };
 
             let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT',
