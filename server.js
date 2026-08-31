@@ -27,6 +27,22 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Server ke upar global variable
+let manualCrashOverride = null;
+
+// Admin route se crash set karne ke liye API
+app.post('/api/set-crash', (req, res) => {
+    const { crashVal } = req.body;
+    manualCrashOverride = parseFloat(crashVal);
+    console.log("Admin set manual crash to:", manualCrashOverride);
+    res.json({ success: true, message: `Crash set to ${manualCrashOverride}x` });
+});
+
+// Get current override for game/admin
+app.get('/api/get-crash', (req, res) => {
+    res.json({ crash: manualCrashOverride });
+});
+
 // Baaki sabhi HTML pages ke liye direct routes
 app.get('/home.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));

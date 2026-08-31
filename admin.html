@@ -37,7 +37,7 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div style="font-size: 13px; color: #94a3b8;">System Status</div>
-            <div class="stat-val" style="font-size: 16px; color: #38bdf8;">Active (Live)</div>
+            <div class="stat-val" style="font-size: 16px; color: #38bdf8;">Active (Live Server)</div>
         </div>
         <div class="stat-card">
             <div style="font-size: 13px; color: #94a3b8;">Pending Deposits</div>
@@ -145,22 +145,39 @@
         loadHistoryRecords();
     });
 
-    function setCustomCrash() {
+    async function setCustomCrash() {
         let crashVal = document.getElementById('nextCrashInput').value;
         if(!crashVal || crashVal < 1.00) {
             alert("Kripya valid multiplier enter karein (e.g. 6.66)");
             return;
         }
-        localStorage.setItem('skynova_manual_crash', crashVal);
-        document.getElementById('currentCrashStatus').innerHTML = `Current Manual Override: <span style="color: #4ade80; font-weight: bold;">${crashVal}x par crash hoga</span>`;
-        alert("Success! Agla round " + crashVal + "x par crash hoga.");
+
+        try {
+            let response = await fetch('/api/set-crash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ crashVal: crashVal })
+            });
+            let result = await response.json();
+            if(result.success) {
+                document.getElementById('currentCrashStatus').innerHTML = `Current Manual Override: <span style="color: #4ade80; font-weight: bold;">${crashVal}x par crash hoga</span>`;
+                alert("Success! Agla round " + crashVal + "x par crash hoga.");
+            }
+        } catch (err) {
+            alert("Server connection error!");
+        }
     }
 
-    function checkActiveOverride() {
-        let saved = localStorage.getItem('skynova_manual_crash');
-        if (saved) {
-            document.getElementById('nextCrashInput').value = saved;
-            document.getElementById('currentCrashStatus').innerHTML = `Current Manual Override: <span style="color: #4ade80; font-weight: bold;">${saved}x par crash hoga</span>`;
+    async function checkActiveOverride() {
+        try {
+            let response = await fetch('/api/get-crash');
+            let data = await response.json();
+            if (data.crash) {
+                document.getElementById('nextCrashInput').value = data.crash;
+                document.getElementById('currentCrashStatus').innerHTML = `Current Manual Override: <span style="color: #4ade80; font-weight: bold;">${data.crash}x par crash hoga</span>`;
+            }
+        } catch (err) {
+            console.error("Could not fetch crash override");
         }
     }
 
@@ -263,21 +280,18 @@
         let bal = parseFloat(localStorage.getItem('skynova_balance') || '69.00') + parseFloat(item.amount);
         localStorage.setItem('skynova_balance', bal.toFixed(2));
 
-        // --- Mark that this user has successfully deposited ---
         localStorage.setItem('skynova_has_deposited_' + item.uid, 'true');
 
-        // --- 5x Wagering / Turnover Requirement Set Karein ---
         let depositAmt = parseFloat(item.amount);
         let requiredAdditionalTurnover = depositAmt * 5;
         let currentReqTurnover = parseFloat(localStorage.getItem('skynova_required_turnover') || '0');
         localStorage.setItem('skynova_required_turnover', currentReqTurnover + requiredAdditionalTurnover);
-        // ---------------------------------------------------
 
         let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
         depHistory.unshift({ ...item, status: 'Approved' });
         localStorage.setItem('skynova_deposit_history', JSON.stringify(depHistory));
 
-        alert("Deposit Approved! User ke liye deposit aur 5x wagering active ho gayi hai.");
+        alert("Deposit Approved!");
         loadRequests();
         loadHistoryRecords();
     }
