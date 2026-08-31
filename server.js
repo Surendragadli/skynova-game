@@ -1,7 +1,8 @@
 const express = require('express');
-const http = require('http');
+const http = http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,30 +16,30 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// Frontend static files (HTML, CSS, JS) ko serve karne ke liye
+app.use(express.static(path.join(__dirname)));
+
 // Temporary memory array (Bina database ke users save karne ke liye)
 const users = [];
 
-// Basic test route
+// Root route par ab index.html khulega
 app.get('/', (req, res) => {
-    res.send("SkyNova Server is running successfully!");
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Signup Route
 app.post('/api/signup', (req, res) => {
     const { mobile, password, inviteCode } = req.body;
     
-    // Mobile number validation (Exact 10 digits & numbers only)
     if (!mobile || mobile.length !== 10 || isNaN(mobile)) {
         return res.status(400).json({ success: false, message: "MOBLIE NUMBER ERROR" });
     }
 
-    // Check karein ki user pehle se registered hai ya nahi
     const existingUser = users.find(u => u.mobile === mobile);
     if (existingUser) {
         return res.status(400).json({ success: false, message: "Ye mobile number pehle se registered hai!" });
     }
 
-    // Naya user save karein
     const newUser = { mobile, password, inviteCode, balance: 0 };
     users.push(newUser);
 
@@ -62,7 +63,7 @@ app.post('/api/login', (req, res) => {
     res.json({ success: true, message: "Login Successful!", balance: user.balance });
 });
 
-// Socket.io connection (Live data ke liye)
+// Socket.io connection
 io.on('connection', (socket) => {
     console.log('A user connected: ' + socket.id);
 
@@ -71,7 +72,7 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`SkyNova Server is running on http://localhost:${PORT}`);
+    console.log(`SkyNova Server is running on port ${PORT}`);
 });
