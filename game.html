@@ -98,9 +98,9 @@
     let betPlaced = false;
     let activeBetAmount = 0;
     let gameInterval = null;
-    let countdownInterval = null;
-    let currentPeriod = 2026083101;
-    let historyList = ["1.45x", "2.10x"];
+    let historyList = JSON.parse(localStorage.getItem('skynova_game_history') || '["1.45x", "2.10x"]');
+
+    updateHistoryUI();
 
     function setBet(amount) {
         let current = parseFloat(document.getElementById('betAmount').value || 0);
@@ -113,21 +113,9 @@
         document.getElementById('userBalance').innerText = balance.toFixed(2);
     }
 
-    async function pushPeriodToCloud(period) {
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let json = await res.json();
-            let data = json.record;
-            data.period = period;
-
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(data)
-            });
-        } catch(e) {}
+    function updateHistoryUI() {
+        let bar = document.getElementById('historyBar');
+        bar.innerHTML = historyList.map(h => `<div class="history-pill">${h}</div>`).join('');
     }
 
     async function pushBetToCloud(amount) {
@@ -185,71 +173,74 @@
         }
     }
 
-    function startRound() {
-        gameState = 'waiting';
-        currentPeriod++;
-        document.getElementById('periodNumber').innerText = currentPeriod;
-        pushPeriodToCloud(currentPeriod);
+    // Continuous Timestamp-based Game Loop (Regular chalega chahe user ho ya na ho)
+    function runContinuousGameLoop() {
+        setInterval(() => {
+            let now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+            let cycleTime = now % 25; // Har 25 second ka ek complete round (13 sec waiting + 12 sec flight)
+            
+            // Period number calculation based on time
+            let periodId = 2026083100 + Math.floor(now / 25);
+            document.getElementById('periodNumber').innerText = periodId;
 
-        let timeLeft = 13; // 13 seconds waiting timer
-        document.getElementById('multiplier').innerText = "1.00x";
-        document.getElementById('gameStatus').innerText = `Next round starts in ${timeLeft}s...`;
-        let plane = document.getElementById('plane');
-        plane.style.display = 'none';
+            if(cycleTime < 13) {
+                // Waiting Phase (13 seconds)
+                if(gameState !== 'waiting') {
+                    gameState = 'waiting';
+                    document.getElementById('multiplier').innerText = "1.00x";
+                    let plane = document.getElementById('plane');
+                    plane.style.display = 'none';
+                    plane.style.transform = `translate(0px, 0px) rotate(0deg)`;
 
-        countdownInterval = setInterval(() => {
-            timeLeft--;
-            if(timeLeft > 0) {
+                    // Agar user ne bet lagayi thi aur cashout nahi kiya toh har round ke shuru me reset
+                    if(betPlaced && gameState === 'crashed') {
+                        betPlaced = false;
+                        let btn = document.getElementById('actionBtn');
+                        btn.innerText = "PLACE BET";
+                        btn.className = "action-btn btn-bet";
+                        btn.disabled = false;
+                        btn.setAttribute('onclick', 'handleBetAction()');
+                    }
+                }
+                let timeLeft = 13 - cycleTime;
                 document.getElementById('gameStatus').innerText = `Next round starts in ${timeLeft}s...`;
+
             } else {
-                clearInterval(countdownInterval);
-                beginFlight();
+                // Flight / Running Phase
+                if(gameState === 'waiting') {
+                    gameState = 'running';
+                    currentMultiplier = 1.00;
+                    document.getElementById('gameStatus').innerText = "Fly away!";
+                    let plane = document.getElementById('plane');
+                    plane.style.display = 'block';
+
+                    if(betPlaced) {
+                        let btn = document.getElementById('actionBtn');
+                        btn.innerText = "CASH OUT";
+                        btn.className = "action-btn btn-cashout";
+                        btn.style.display = "block";
+                        btn.disabled = false;
+                        btn.setAttribute('onclick', 'cashOut()');
+                    }
+                }
+
+                // Increment multiplier smoothly during flight
+                currentMultiplier += 0.04;
+                document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
+
+                let xPos = 30 + ((cycleTime - 13) * 18);
+                let yPos = (cycleTime - 13) * 9;
+                if(xPos > 220) xPos = 220;
+                if(yPos > 110) yPos = 110;
+                let plane = document.getElementById('plane');
+                plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(25deg)`;
+
+                // End of flight at 25 seconds mark
+                if(cycleTime >= 24 && gameState === 'running') {
+                    triggerCrash();
+                }
             }
         }, 1000);
-    }
-
-    async function beginFlight() {
-        gameState = 'running';
-        currentMultiplier = 1.00;
-        document.getElementById('gameStatus').innerText = "Fly away!";
-        let plane = document.getElementById('plane');
-        plane.style.display = 'block';
-        
-        if(betPlaced) {
-            let btn = document.getElementById('actionBtn');
-            btn.innerText = "CASH OUT";
-            btn.className = "action-btn btn-cashout";
-            btn.style.display = "block";
-            btn.disabled = false;
-            btn.setAttribute('onclick', 'cashOut()');
-        }
-
-        let overrideCrash = 2.00;
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let json = await res.json();
-            overrideCrash = json.record.crash || 2.00;
-        } catch(e) {}
-
-        let xPos = 30;
-        let yPos = 0;
-
-        gameInterval = setInterval(() => {
-            currentMultiplier += 0.03;
-            document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
-
-            xPos += 1.5;
-            yPos += 1.2;
-            if(xPos > 220) xPos = 220;
-            if(yPos > 110) yPos = 110;
-            plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(25deg)`;
-
-            if(currentMultiplier >= overrideCrash) {
-                crashGame();
-            }
-        }, 100);
     }
 
     function cashOut() {
@@ -266,17 +257,21 @@
         clearCloudBets();
     }
 
-    function crashGame() {
-        clearInterval(gameInterval);
+    function triggerCrash() {
         gameState = 'crashed';
         let finalStr = currentMultiplier.toFixed(2) + 'x';
         document.getElementById('multiplier').innerText = finalStr;
         document.getElementById('gameStatus').innerText = "CRASHED!";
         document.getElementById('plane').style.display = 'none';
 
+        historyList.unshift(finalStr);
+        if(historyList.length > 10) historyList.pop();
+        localStorage.setItem('skynova_game_history', JSON.stringify(historyList));
+        updateHistoryUI();
+
         if(betPlaced) {
             betPlaced = false;
-            alert("Aapka bet haar gaya!");
+            alert("Aapka bet haar gaya! Rocket crash ho gaya.");
         }
 
         let btn = document.getElementById('actionBtn');
@@ -287,11 +282,10 @@
         btn.setAttribute('onclick', 'handleBetAction()');
 
         clearCloudBets();
-        setTimeout(startRound, 3000);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        startRound();
+        runContinuousGameLoop();
     });
 </script>
 </body>
