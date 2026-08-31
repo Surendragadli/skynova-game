@@ -21,29 +21,19 @@
         .form-control { width: 100%; background-color: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; outline: none; box-sizing: border-box; }
         .form-control:focus { border-color: #38bdf8; }
         
-        .btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; }
+        .btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; width: 100%; }
         .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
         .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
-
-        .req-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .req-table th { background-color: #1f293d; color: #38bdf8; padding: 10px; text-align: left; }
-        .req-table td { padding: 10px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
-        .action-btns { display: flex; gap: 5px; }
-        
-        .badge-approved { color: #4ade80; font-weight: bold; }
-        .badge-rejected { color: #ef4444; font-weight: bold; }
-        .badge-pending { color: #fbbf24; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="brand"><i class="fa-solid fa-shield-halved"></i> SkyNova Admin Panel</div>
-    <a href="home.html" class="home-link"><i class="fa-solid fa-house"></i> Home Par Jayein</a>
+    <a href="home.html" class="home-link"><i class="fa-solid fa-house"></i> Home Jayein</a>
 </header>
 
 <div class="container">
@@ -53,12 +43,12 @@
             <div class="stat-val" style="font-size: 14px; color: #34d399;">Active</div>
         </div>
         <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Pending Dep.</div>
-            <div class="stat-val" id="pendingDepCount">0</div>
+            <div style="font-size: 11px; color: #94a3b8;">Total Bets</div>
+            <div class="stat-val" id="totalLiveBetAmount">₹0.00</div>
         </div>
         <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Pending With.</div>
-            <div class="stat-val" id="pendingWithCount">0</div>
+            <div style="font-size: 11px; color: #94a3b8;">Active Users</div>
+            <div class="stat-val">1</div>
         </div>
     </div>
 
@@ -73,95 +63,11 @@
         <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
     </div>
 
-    <!-- Live Game Bets -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Current Round)</div>
-        <div style="background: #0b0f19; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; color: #94a3b8; font-weight: bold;">Kul Lagi Hui Bet (Total Amount):</span>
-            <span id="totalLiveBetAmount" style="font-size: 18px; color: #4ade80; font-weight: bold;">₹0.00</span>
-        </div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Bet Amount</th>
-                        <th>Panel</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="liveBetsTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi koi live bet nahi lagi hai.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Deposit Requests -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-wallet"></i> User Deposit Requests (Pending)</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Amount</th>
-                        <th>UTR / Ref</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="depositTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending deposit request nahi hai.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Withdrawal Requests -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> User Withdrawal Requests (Pending)</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Amount</th>
-                        <th>Details (UPI/Bank)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="withdrawalTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending withdrawal request nahi hai.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- History -->
-    <div class="card">
-        <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History (All Records)</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi tak koi history nahi hai.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <!-- Naya Gift Code Banayein -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
         <div class="form-group">
-            <label>Gift Code Name (jaise: BONUS500):</label>
+            <label>Gift Code Name (jaise: BONUS100):</label>
             <input type="text" id="giftCodeInput" class="form-control" placeholder="CODE NAME">
         </div>
         <div class="form-group">
@@ -170,7 +76,7 @@
         </div>
         <div class="form-group">
             <label>Max Uses (Kitne log use kar sakte hain):</label>
-            <input type="number" id="giftMaxUsesInput" class="form-control" value="50">
+            <input type="number" id="giftMaxUsesInput" class="form-control" value="100">
         </div>
         <button class="btn" onclick="createGiftCode()">Gift Code Banayein</button>
     </div>
@@ -178,13 +84,11 @@
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        let savedCrash = localStorage.getItem('skynova_admin_crash');
+        let savedCrash = localStorage.getItem('skynova_admin_crash') || localStorage.getItem('aviator_override_crash');
         if(savedCrash) {
             document.getElementById('crashInput').value = savedCrash;
             document.getElementById('crashStatusMsg').innerText = `Current Override: ${savedCrash}x par crash hoga`;
         }
-        loadAdminData();
-        setInterval(loadLiveBets, 2000);
     });
 
     function setCrashPoint() {
@@ -194,169 +98,13 @@
             return;
         }
         let numVal = parseFloat(val).toFixed(2);
+        
+        // Dono keys me save karein taaki game engine ko turant mil jaye
         localStorage.setItem('skynova_admin_crash', numVal);
         localStorage.setItem('aviator_override_crash', numVal);
+
         document.getElementById('crashStatusMsg').innerText = `Successfully Set! Next crash at ${numVal}x`;
-        alert(`Crash point successfully ${numVal}x set kar diya gaya hai!`);
-    }
-
-    function loadLiveBets() {
-        let liveBets = JSON.parse(localStorage.getItem('skynova_live_bets') || '[]');
-        let betsHtml = '';
-        let totalAmount = 0;
-
-        if(liveBets.length === 0) {
-            betsHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi koi live bet nahi lagi hai.</td></tr>`;
-        } else {
-            liveBets.forEach(b => {
-                totalAmount += parseFloat(b.amount || 0);
-                betsHtml += `<tr>
-                    <td><b>${b.uid}</b></td>
-                    <td style="color: #38bdf8; font-weight: bold;">₹${b.amount}</td>
-                    <td>Panel ${b.panel}</td>
-                    <td><span style="color: #fbbf24; font-weight: bold;">${b.status || 'Active'}</span></td>
-                </tr>`;
-            });
-        }
-        document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
-        document.getElementById('totalLiveBetAmount').innerText = `₹${totalAmount.toFixed(2)}`;
-    }
-
-    function loadAdminData() {
-        loadLiveBets();
-        
-        let deposits = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
-        let pendingDeps = deposits.filter(d => d.status === 'Pending');
-        document.getElementById('pendingDepCount').innerText = pendingDeps.length;
-        
-        let depHtml = '';
-        if(pendingDeps.length === 0) {
-            depHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending deposit request nahi hai.</td></tr>`;
-        } else {
-            pendingDeps.forEach(item => {
-                depHtml += `<tr>
-                    <td><b>${item.uid}</b></td>
-                    <td style="color: #4ade80;">₹${item.amount}</td>
-                    <td>${item.utr || 'N/A'}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;" onclick="approveDeposit(${item.id})">Approve</button>
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="rejectDeposit(${item.id})">Reject</button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-        }
-        document.getElementById('depositTableBody').innerHTML = depHtml;
-
-        let withdrawals = JSON.parse(localStorage.getItem('skynova_withdraw_requests') || '[]');
-        let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
-        document.getElementById('pendingWithCount').innerText = pendingWiths.length;
-
-        let withHtml = '';
-        if(pendingWiths.length === 0) {
-            withHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending withdrawal request nahi hai.</td></tr>`;
-        } else {
-            pendingWiths.forEach(item => {
-                withHtml += `<tr>
-                    <td><b>${item.uid}</b></td>
-                    <td style="color: #ef4444;">₹${item.amount}</td>
-                    <td>${item.details || 'UPI/Bank'}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;" onclick="approveWithdraw(${item.id})">Approve</button>
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="rejectWithdraw(${item.id})">Reject</button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-        }
-        document.getElementById('withdrawalTableBody').innerHTML = withHtml;
-
-        let allHistory = [];
-        deposits.forEach(d => {
-            allHistory.push({ uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id });
-        });
-        withdrawals.forEach(w => {
-            allHistory.push({ uid: w.uid, type: 'Withdrawal', amount: w.amount, status: w.status, time: w.id });
-        });
-
-        allHistory.sort((a, b) => b.time - a.time);
-
-        let histHtml = '';
-        if(allHistory.length === 0) {
-            histHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi tak koi history nahi hai.</td></tr>`;
-        } else {
-            allHistory.forEach(h => {
-                let statusBadge = `<span class="badge-pending">Pending</span>`;
-                if(h.status === 'Approved') statusBadge = `<span class="badge-approved">Approved</span>`;
-                if(h.status === 'Rejected') statusBadge = `<span class="badge-rejected">Rejected</span>`;
-
-                let typeColor = (h.type === 'Deposit') ? 'color: #4ade80;' : 'color: #ef4444;';
-
-                histHtml += `<tr>
-                    <td><b>${h.uid}</b></td>
-                    <td><span style="${typeColor} font-weight: bold;">${h.type}</span></td>
-                    <td>₹${h.amount}</td>
-                    <td>${statusBadge}</td>
-                </tr>`;
-            });
-        }
-        document.getElementById('historyTableBody').innerHTML = histHtml;
-    }
-
-    function approveDeposit(id) {
-        let deposits = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
-        let req = deposits.find(d => d.id === id);
-        if(req) {
-            req.status = 'Approved';
-            localStorage.setItem('skynova_deposit_requests', JSON.stringify(deposits));
-
-            let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
-            currentBal += parseFloat(req.amount);
-            localStorage.setItem('skynova_balance', currentBal.toFixed(2));
-
-            alert(`Deposit of ₹${req.amount} approved successfully!`);
-            loadAdminData();
-        }
-    }
-
-    function rejectDeposit(id) {
-        let deposits = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
-        let req = deposits.find(d => d.id === id);
-        if(req) {
-            req.status = 'Rejected';
-            localStorage.setItem('skynova_deposit_requests', JSON.stringify(deposits));
-            alert("Deposit request rejected.");
-            loadAdminData();
-        }
-    }
-
-    function approveWithdraw(id) {
-        let withdrawals = JSON.parse(localStorage.getItem('skynova_withdraw_requests') || '[]');
-        let req = withdrawals.find(w => w.id === id);
-        if(req) {
-            req.status = 'Approved';
-            localStorage.setItem('skynova_withdraw_requests', JSON.stringify(withdrawals));
-            alert(`Withdrawal of ₹${req.amount} approved successfully!`);
-            loadAdminData();
-        }
-    }
-
-    function rejectWithdraw(id) {
-        let withdrawals = JSON.parse(localStorage.getItem('skynova_withdraw_requests') || '[]');
-        let req = withdrawals.find(w => w.id === id);
-        if(req) {
-            req.status = 'Rejected';
-            localStorage.setItem('skynova_withdraw_requests', JSON.stringify(withdrawals));
-            
-            let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
-            currentBal += parseFloat(req.amount);
-            localStorage.setItem('skynova_balance', currentBal.toFixed(2));
-
-            alert("Withdrawal request rejected and amount refunded.");
-            loadAdminData();
-        }
+        alert(`Crash point successfully ${numVal}x set kar diya gaya hai! Ab game usi par crash hoga.`);
     }
 
     function createGiftCode() {
@@ -369,6 +117,7 @@
             return;
         }
 
+        // Existing codes load karein
         let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
         
         giftDb[code] = {
@@ -380,12 +129,9 @@
 
         localStorage.setItem('skynova_gift_codes', JSON.stringify(giftDb));
         
-        // Debug check
-        console.log("Updated Gift DB:", giftDb);
-
         document.getElementById('giftCodeInput').value = '';
         document.getElementById('giftAmountInput').value = '';
-        alert(`Gift Code '${code}' (₹${amount}) successfully ban gaya hai!`);
+        alert(`Gift Code '${code}' (₹${amount}) successfully ban gaya hai! Ab user account me jaakar ise claim kar sakte hain.`);
     }
 </script>
 </body>
