@@ -90,7 +90,7 @@
     const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
 
     let balance = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
-    let uid = localStorage.getItem('skynova_uid') || '794973';
+    let uid = localStorage.getItem('skynova_uid' || '794973');
     document.getElementById('userBalance').innerText = balance.toFixed(2);
 
     let gameState = 'waiting'; 
@@ -183,19 +183,17 @@
         }
     }
 
-    // Smooth & Non-blocking Continuous Loop with 13 seconds waiting time
     function runContinuousGameLoop() {
         setInterval(async () => {
             fetchPeriodCrashes();
 
             let now = Math.floor(Date.now() / 1000);
-            let totalCycle = 25; // 13 sec waiting + 12 sec flight
+            let totalCycle = 25; // 13s wait + 12s flight
             let cycleTime = now % totalCycle; 
             let periodId = 2026083100 + Math.floor(now / totalCycle);
             document.getElementById('periodNumber').innerText = periodId;
 
             if(cycleTime < 13) {
-                // Waiting Phase (13 Seconds)
                 if(gameState !== 'waiting') {
                     gameState = 'waiting';
                     document.getElementById('multiplier').innerText = "1.00x";
@@ -216,7 +214,6 @@
                 document.getElementById('gameStatus').innerText = `Next round starts in ${timeLeft}s...`;
 
             } else {
-                // Running Phase
                 if(gameState === 'waiting') {
                     gameState = 'running';
                     currentMultiplier = 1.00;
@@ -234,7 +231,7 @@
                     }
                 }
 
-                let flightElapsed = cycleTime - 13; // 0 to 11 seconds
+                let flightElapsed = cycleTime - 13;
                 currentMultiplier = 1.00 + (flightElapsed * 0.25);
                 document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
 
@@ -251,7 +248,7 @@
                     triggerCrash(targetCrash);
                 }
             }
-        }, 200); // 200ms interval for ultra-smooth rendering without lag
+        }, 200);
     }
 
     function cashOut() {
