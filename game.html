@@ -16,8 +16,11 @@
         
         .game-container { max-width: 500px; margin: 15px auto; padding: 10px; }
         .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; color: #94a3b8; font-weight: bold; }
+        
+        /* History Bar with Period & Multiplier */
         .history-bar { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; margin-bottom: 12px; white-space: nowrap; }
-        .history-pill { background: #161e2e; border: 1px solid #334155; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #38bdf8; }
+        .history-pill { background: #161e2e; border: 1px solid #334155; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #38bdf8; text-align: center; display: inline-block; }
+        .history-pill span { display: block; font-size: 13px; color: #4ade80; }
 
         .game-screen { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
         .multiplier-display { font-size: 50px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); z-index: 2; }
@@ -57,9 +60,10 @@
         <span>Period: <b id="periodNumber" style="color: #38bdf8;">2026083101</b></span>
         <span>History:</span>
     </div>
+    <!-- History bar jisme Period aur Multiplier dono dikhenge -->
     <div class="history-bar" id="historyBar">
-        <div class="history-pill">1.45x</div>
-        <div class="history-pill">2.10x</div>
+        <div class="history-pill">2097610103<br><span>2.10x</span></div>
+        <div class="history-pill">2097610104<br><span>3.50x</span></div>
     </div>
 
     <div class="game-screen">
@@ -98,7 +102,8 @@
 
     let betPlaced = false;
     let activeBetAmount = 0;
-    let historyList = JSON.parse(localStorage.getItem('skynova_game_history') || '["1.45x", "2.10x"]');
+    // History array me objects store honge jisme period aur mult dono honge
+    let historyList = JSON.parse(localStorage.getItem('skynova_game_history_detailed') || '[{"period":"2097610103", "mult":"2.10x"}, {"period":"2097610104", "mult":"3.50x"}]');
     let cloudPeriodCrashes = {};
 
     updateHistoryUI();
@@ -126,7 +131,7 @@
 
     function updateHistoryUI() {
         let bar = document.getElementById('historyBar');
-        bar.innerHTML = historyList.map(h => `<div class="history-pill">${h}</div>`).join('');
+        bar.innerHTML = historyList.map(h => `<div class="history-pill">${h.period}<br><span>${h.mult}</span></div>`).join('');
     }
 
     async function pushBetToCloud(amount) {
@@ -183,7 +188,7 @@
         }
     }
 
-    // High performance smooth loop with auto random crash fallback
+    // Continuous & Smooth Game Loop with 13s Waiting Time
     function initGameEngine() {
         const WAIT_TIME = 13; // 13 seconds waiting
         const FLIGHT_TIME = 12; // 12 seconds flight
@@ -194,7 +199,7 @@
 
             let nowSec = Math.floor(Date.now() / 1000);
             let cycleTime = nowSec % TOTAL_CYCLE;
-            let periodId = 2026083100 + Math.floor(nowSec / TOTAL_CYCLE);
+            let periodId = 2097610100 + Math.floor(nowSec / TOTAL_CYCLE);
             document.getElementById('periodNumber').innerText = periodId;
 
             let multEl = document.getElementById('multiplier');
@@ -239,12 +244,10 @@
                 let flightElapsed = cycleTime - WAIT_TIME;
                 let currentMult = 1.00 + (flightElapsed * 0.35);
 
-                // Agar admin ne period crash set nahi kiya, toh periodId ke mutabiq automatic random crash generate hoga
                 let targetCrash = cloudPeriodCrashes[periodId];
                 if (!targetCrash) {
-                    // Seed based random generation taaki sabhi users ke liye same period par same random crash chale
                     let seed = periodId * 9301 + 49297;
-                    let randomVal = (seed % 400) / 100; // 0.00 to 4.00
+                    let randomVal = (seed % 400) / 100;
                     targetCrash = parseFloat((1.20 + randomVal).toFixed(2));
                 }
 
@@ -262,7 +265,7 @@
 
                 if (currentMult >= targetCrash && !statusEl.dataset.crashedOnce) {
                     statusEl.dataset.crashedOnce = "true";
-                    triggerCrash(targetCrash);
+                    triggerCrash(targetCrash, periodId);
                 }
             }
 
@@ -290,7 +293,7 @@
         clearCloudBets();
     }
 
-    function triggerCrash(crashVal) {
+    function triggerCrash(crashVal, currentPeriodId) {
         let multEl = document.getElementById('multiplier');
         multEl.innerText = crashVal.toFixed(2) + 'x';
         multEl.classList.add('crashed');
@@ -301,9 +304,9 @@
         document.getElementById('plane').style.display = 'none';
 
         let finalStr = crashVal.toFixed(2) + 'x';
-        historyList.unshift(finalStr);
+        historyList.unshift({ period: currentPeriodId, mult: finalStr });
         if(historyList.length > 10) historyList.pop();
-        localStorage.setItem('skynova_game_history', JSON.stringify(historyList));
+        localStorage.setItem('skynova_game_history_detailed', JSON.stringify(historyList));
         updateHistoryUI();
 
         if(betPlaced) {
