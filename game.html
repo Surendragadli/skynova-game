@@ -5,29 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyNova - Aviator Pro</title>
     <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 30px; }
-        header { background-color: #161e2e; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 50px; }
+        header { background-color: #161e2e; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
         .brand { font-size: 20px; font-weight: bold; color: #e11d48; font-style: italic; }
-        .wallet-box { background-color: #0b0f19; padding: 6px 12px; border-radius: 20px; border: 1px solid #38bdf8; font-size: 14px; color: #38bdf8; font-weight: bold; }
-        .period-bar { background-color: #0f172a; padding: 6px 15px; font-size: 13px; color: #38bdf8; font-weight: bold; border-bottom: 1px solid #1f293d; display: flex; justify-content: space-between; }
-        .history-bar { background-color: #111827; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid #1f293d; white-space: nowrap; }
-        .history-chip { background-color: #1f293d; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #4ade80; text-align: center; min-width: 75px; flex-shrink: 0; }
+        .wallet-box { background-color: #0b0f19; padding: 6px 14px; border-radius: 20px; border: 1px solid #38bdf8; font-size: 15px; color: #38bdf8; font-weight: bold; }
+        .period-bar { background-color: #0f172a; padding: 8px 15px; font-size: 13px; color: #38bdf8; font-weight: bold; border-bottom: 1px solid #1f293d; display: flex; justify-content: space-between; }
+        .history-bar { background-color: #111827; padding: 10px 12px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid #1f293d; white-space: nowrap; }
+        .history-chip { background-color: #1f293d; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #4ade80; text-align: center; min-width: 80px; flex-shrink: 0; }
         .history-chip span { display: block; font-size: 10px; color: #94a3b8; }
         .game-container { max-width: 500px; margin: 10px auto; padding: 10px; }
-        .plane-screen { height: 180px; background: linear-gradient(135deg, #0f172a, #1e1b4b); border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #334155; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
-        #multiplier { font-size: 44px; font-weight: bold; color: #ffffff; }
-        .game-status { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; }
-        .bet-panel { background-color: #161e2e; border-radius: 10px; padding: 12px; margin-top: 10px; border: 1px solid #1f293d; }
-        .bet-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .input-group { display: flex; align-items: center; background-color: #0b0f19; border: 1px solid #334155; border-radius: 8px; overflow: hidden; width: 100%; }
-        .input-group input { width: 100%; background: transparent; border: none; color: #fff; text-align: center; font-size: 16px; padding: 8px 0; outline: none; }
-        .quick-btns { display: flex; gap: 4px; margin-top: 6px; }
-        .quick-btn { background-color: #1f293d; color: #cbd5e1; border: none; padding: 3px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; }
-        .action-btn { width: 52%; padding: 12px; font-size: 15px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; text-transform: uppercase; }
+        
+        /* Plane Screen Animation Area */
+        .plane-screen { height: 220px; background: linear-gradient(135deg, #0f172a, #1e1b4b); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #334155; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        #multiplier { font-size: 48px; font-weight: bold; color: #ffffff; z-index: 2; }
+        .game-status { font-size: 15px; color: #94a3b8; margin-top: 5px; font-weight: bold; z-index: 2; }
+        
+	/* Flying Plane Icon */
+        #flyingPlane { position: absolute; bottom: 20px; left: 20px; font-size: 32px; color: #38bdf8; z-index: 1; transition: transform 0.1s linear; display: none; }
+
+        .bet-panel { background-color: #161e2e; border-radius: 12px; padding: 16px; margin-top: 15px; border: 1px solid #1f293d; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .bet-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .input-group { display: flex; align-items: center; background-color: #0b0f19; border: 1px solid #334155; border-radius: 10px; overflow: hidden; width: 100%; }
+        .input-group input { width: 100%; background: transparent; border: none; color: #fff; text-align: center; font-size: 18px; font-weight: bold; padding: 12px 0; outline: none; }
+        .quick-btns { display: flex; gap: 6px; margin-top: 10px; }
+        .quick-btn { background-color: #1f293d; color: #cbd5e1; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; flex: 1; }
+        .action-btn { width: 50%; padding: 18px 10px; font-size: 17px; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-bet { background-color: #22c55e; color: #ffffff; }
         .btn-cancel { background-color: #eab308; color: #000000; }
         .btn-cashout { background-color: #ef4444; color: #ffffff; }
+
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #1f293d; z-index: 50; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; }
+        .nav-item.active { color: #38bdf8; }
     </style>
 </head>
 <body>
@@ -47,6 +58,8 @@
 
 <div class="game-container">
     <div class="plane-screen">
+        <!-- Udta hua plane icon -->
+        <i class="fa-solid fa-plane-departure" id="flyingPlane"></i>
         <div id="multiplier">1.00x</div>
         <div class="game-status" id="gameStatus">Waiting...</div>
     </div>
@@ -54,7 +67,7 @@
     <!-- Bet Panel 1 -->
     <div class="bet-panel">
         <div class="bet-row">
-            <div style="width: 46%;">
+            <div style="width: 48%;">
                 <div class="input-group"><input type="number" id="bet1Amount" value="10"></div>
                 <div class="quick-btns">
                     <button class="quick-btn" onclick="setBet(1, 10)">10</button>
@@ -69,7 +82,7 @@
     <!-- Bet Panel 2 -->
     <div class="bet-panel">
         <div class="bet-row">
-            <div style="width: 46%;">
+            <div style="width: 48%;">
                 <div class="input-group"><input type="number" id="bet2Amount" value="10"></div>
                 <div class="quick-btns">
                     <button class="quick-btn" onclick="setBet(2, 10)">10</button>
@@ -80,6 +93,13 @@
             <button class="action-btn btn-bet" id="btn2" onclick="handleBet(2)">BET</button>
         </div>
     </div>
+</div>
+
+<div class="navbar">
+    <a href="home.html" class="nav-item">🏠 Home</a>
+    <a href="game.html" class="nav-item active">🎮 Game</a>
+    <a href="refer.html" class="nav-item">🎁 Refer & Earn</a>
+    <a href="account.html" class="nav-item">👤 Account</a>
 </div>
 
 <script>
@@ -170,12 +190,17 @@
         let naturalCrashPoint = 1.20 + (Math.abs(seed - Math.floor(seed)) * 8.0);
         let roundCrashPoint = (serverCrashOverride !== null && !isNaN(serverCrashOverride)) ? parseFloat(serverCrashOverride) : naturalCrashPoint;
 
+        let plane = document.getElementById('flyingPlane');
+
         if (cycleTime < WAIT_DURATION) {
             let timeLeft = (WAIT_DURATION - cycleTime) / 1000;
             document.getElementById('multiplier').innerText = "1.00x";
             document.getElementById('multiplier').style.color = "#ffffff";
             document.getElementById('gameStatus').innerText = `Agli udaan ${Math.ceil(timeLeft)}s mein...`;
             document.getElementById('gameStatus').style.color = "#38bdf8";
+
+            plane.style.display = "none";
+            plane.style.transform = "translate(0px, 0px) rotate(0deg)";
 
             if (bet1State === 1) bet1State = 2;
             if (bet2State === 1) bet2State = 2;
@@ -195,6 +220,13 @@
             document.getElementById('gameStatus').innerText = "Plane ud raha hai...";
             document.getElementById('gameStatus').style.color = "#94a3b8";
 
+            // Plane animation movement (diagonal up & right movement)
+            plane.style.display = "block";
+            let moveX = progress * 180;
+            let moveY = -progress * 70;
+            let tilt = -15 - (progress * 10);
+            plane.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${tilt}deg)`;
+
             updateButtonUI(1);
             updateButtonUI(2);
         } 
@@ -204,6 +236,9 @@
             document.getElementById('multiplier').style.color = "#ef4444"; 
             document.getElementById('gameStatus').innerText = "Crashed!";
             document.getElementById('gameStatus').style.color = "#ef4444"; 
+
+            // Plane crash down tilt effect
+            plane.style.transform += " rotate(45deg) scale(0.9)";
 
             if (bet1State === 2) bet1State = 4;
             if (bet2State === 2) bet2State = 4;
@@ -277,7 +312,7 @@
             } else if (state === 3) {
                 btn.innerText = "WON"; btn.className = "action-btn btn-bet";
             } else if (state === 4) {
-                btn.innerText = "CRASHED"; btn.className = "action-btn btn-cancel";
+                btn.innerText = "CRASHED"; btn.className, "action-btn btn-cancel";
             } else {
                 btn.innerText = "WAIT"; btn.className = "action-btn btn-bet";
             }
