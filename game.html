@@ -100,11 +100,11 @@
     let bet1Amt = 0;
     let bet2Amt = 0;
     let currentMultiplier = 1.00;
+    let serverCrashOverride = null;
 
-    // Timings: 13 sec Wait (Betting) + 10 sec Flight + 3 sec Crash Hold = 26 sec total round
-    const WAIT_DURATION = 13000;   
-    const FLIGHT_DURATION = 10000; 
-    const CRASH_HOLD_DURATION = 3000; 
+    const WAIT_DURATION = 13000;   // 13 sec betting
+    const FLIGHT_DURATION = 10000; // 10 sec flying
+    const CRASH_HOLD_DURATION = 3000; // 3 sec crashed hold
     const ROUND_DURATION = WAIT_DURATION + FLIGHT_DURATION + CRASH_HOLD_DURATION; 
 
     let lastRecordedPeriod = null;
@@ -116,6 +116,19 @@
     function setBet(panel, val) {
         document.getElementById(`bet${panel}Amount`).value = val;
     }
+
+    // Server se live admin override fetch karne ke liye
+    async function fetchServerCrashOverride() {
+        try {
+            let response = await fetch('/api/get-crash');
+            let data = await response.json();
+            serverCrashOverride = data.crash;
+        } catch (err) {
+            console.error("Server crash fetch error:", err);
+        }
+    }
+
+    setInterval(fetchServerCrashOverride, 2000);
 
     function loadHistory() {
         let historyBar = document.getElementById('historyBar');
@@ -150,8 +163,9 @@
 
     updateUI();
     loadHistory();
+    fetchServerCrashOverride();
 
-    // --- 100% Precise Synchronized Game Engine ---
+    // --- Server Synced Game Engine ---
     setInterval(() => {
         let nowTimestamp = Date.now();
         let cycleTime = nowTimestamp % ROUND_DURATION;
@@ -160,14 +174,15 @@
         let currentPeriod = 202600000000 + epochRounds;
         document.getElementById('currentPeriodDisplay').innerText = currentPeriod;
 
-        // Determine exact fixed crash point for this round
+        // Base Natural Crash Point
         let seed = Math.sin(epochRounds) * 10000;
         let naturalCrashPoint = 1.20 + (Math.abs(seed - Math.floor(seed)) * 8.0);
-        let manualCrash = localStorage.getItem('skynova_manual_crash');
-        let roundCrashPoint = manualCrash ? parseFloat(manualCrash) : naturalCrashPoint;
+        
+        // Use Server Override if set by Admin Panel
+        let roundCrashPoint = (serverCrashOverride !== null && !isNaN(serverCrashOverride)) ? parseFloat(serverCrashOverride) : naturalCrashPoint;
 
         if (cycleTime < WAIT_DURATION) {
-            // --- WAITING PHASE (13 seconds to place bets) ---
+            // --- WAITING PHASE (13 seconds) ---
             let timeLeft = (WAIT_DURATION - cycleTime) / 1000;
             document.getElementById('multiplier').innerText = "1.00x";
             document.getElementById('multiplier').style.color = "#ffffff";
@@ -181,12 +196,12 @@
             updateButtonUI(2, "WAITING");
         } 
         else if (cycleTime >= WAIT_DURATION && cycleTime < (WAIT_DURATION + FLIGHT_DURATION)) {
-            // --- FLYING PHASE (10 seconds flight) ---
+            // --- FLYING PHASE (10 seconds) ---
             let flightTime = (cycleTime - WAIT_DURATION) / 1000; 
             let progress = flightTime / (FLIGHT_DURATION / 1000);
             
             currentMultiplier = parseFloat((1.00 + (roundCrashPoint - 1.00) * progress).toFixed(2));
-            if (currentMultiplier >= roundCrashPoint) {
+            if (currentMultiplier > roundCrashPoint) {
                 currentMultiplier = roundCrashPoint;
             }
 
@@ -199,8 +214,8 @@
             updateButtonUI(2, "FLYING");
         } 
         else {
-            // --- CRASHED PHASE (3 seconds hold on EXACT roundCrashPoint) ---
-            currentMultiplier = roundCrashPoint; // Exact match to the intended crash point
+            // --- CRASHED PHASE ---
+            currentMultiplier = roundCrashPoint;
 
             document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + "x";
             document.getElementById('multiplier').style.color = "#ef4444"; 
@@ -210,16 +225,11 @@
             if (bet1State === 2) bet1State = 4;
             if (bet2State === 2) bet2State = 4;
 
-            // Save history accurately once per round
             if (lastRecordedPeriod !== currentPeriod) {
                 saveToHistory(currentPeriod, currentMultiplier);
                 lastRecordedPeriod = currentPeriod;
-                if (manualCrash) {
-                    localStorage.removeItem('skynova_manual_crash');
-                }
             }
 
-            // Reset bet states before next round starts
             if (cycleTime > (ROUND_DURATION - 500)) {
                 if (bet1State === 3 || bet1State === 4) bet1State = 0;
                 if (bet2State === 3 || bet2State === 4) bet2State = 0;
@@ -266,9 +276,6 @@
             let win = amt * currentMultiplier;
             bal += win;
             setBalance(bal);
-
-            let playedTurnover = parseFloat(localStorage.getItem('skynova_current_turnover') || '0') + amt;
-            localStorage.setItem('skynova_current_turnover', playedTurnover);
 
             if (panel === 1) { bet1State = 3; } else { bet2State = 3; }
             updateButtonUI(panel, "FLYING");
