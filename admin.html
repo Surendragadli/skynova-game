@@ -78,6 +78,10 @@
     <!-- Live Game Bets (Active Round) -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Current Round)</div>
+        <div style="background: #0b0f19; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; color: #94a3b8; font-weight: bold;">Kul Lagi Hui Bet (Total Amount):</span>
+            <span id="totalLiveBetAmount" style="font-size: 18px; color: #4ade80; font-weight: bold;">₹0.00</span>
+        </div>
         <div style="overflow-x: auto;">
             <table class="req-table">
                 <thead>
@@ -182,8 +186,6 @@
             document.getElementById('crashStatusMsg').innerText = `Current Override: ${savedCrash}x par crash hoga`;
         }
         loadAdminData();
-        
-        // Auto refresh live bets every 2 seconds
         setInterval(loadLiveBets, 2000);
     });
 
@@ -203,10 +205,13 @@
     function loadLiveBets() {
         let liveBets = JSON.parse(localStorage.getItem('skynova_live_bets') || '[]');
         let betsHtml = '';
+        let totalAmount = 0;
+
         if(liveBets.length === 0) {
             betsHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi koi live bet nahi lagi hai.</td></tr>`;
         } else {
             liveBets.forEach(b => {
+                totalAmount += parseFloat(b.amount || 0);
                 betsHtml += `<tr>
                     <td><b>${b.uid}</b></td>
                     <td style="color: #38bdf8; font-weight: bold;">₹${b.amount}</td>
@@ -216,12 +221,12 @@
             });
         }
         document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
+        document.getElementById('totalLiveBetAmount').innerText = `₹${totalAmount.toFixed(2)}`;
     }
 
     function loadAdminData() {
         loadLiveBets();
         
-        // Load Deposits
         let deposits = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
         let pendingDeps = deposits.filter(d => d.status === 'Pending');
         document.getElementById('pendingDepCount').innerText = pendingDeps.length;
@@ -246,7 +251,6 @@
         }
         document.getElementById('depositTableBody').innerHTML = depHtml;
 
-        // Load Withdrawals
         let withdrawals = JSON.parse(localStorage.getItem('skynova_withdraw_requests') || '[]');
         let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
         document.getElementById('pendingWithCount').innerText = pendingWiths.length;
@@ -271,7 +275,6 @@
         }
         document.getElementById('withdrawalTableBody').innerHTML = withHtml;
 
-        // Load Full History
         let allHistory = [];
         deposits.forEach(d => {
             allHistory.push({ uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id });
