@@ -12,7 +12,7 @@
         .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
         .home-link { color: #f59e0b; text-decoration: none; font-size: 14px; font-weight: bold; }
         
-        .container { max-width: 700px; margin: 15px auto; padding: 10px; }
+        .container { max-width: 750px; margin: 15px auto; padding: 10px; }
         .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .card-title { font-size: 16px; font-weight: bold; color: #38bdf8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         
@@ -29,11 +29,15 @@
         .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
         .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
 
-        /* Request Tables Styling */
+        /* Tables Styling */
         .req-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         .req-table th { background-color: #1f293d; color: #38bdf8; padding: 10px; text-align: left; }
         .req-table td { padding: 10px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
         .action-btns { display: flex; gap: 5px; }
+        
+        .badge-approved { color: #4ade80; font-weight: bold; }
+        .badge-rejected { color: #ef4444; font-weight: bold; }
+        .badge-pending { color: #fbbf24; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -111,6 +115,26 @@
         </div>
     </div>
 
+    <!-- Complete User History (Deposit & Withdrawal) -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History (All Records)</div>
+        <div style="overflow-x: auto;">
+            <table class="req-table">
+                <thead>
+                    <tr>
+                        <th>UID</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi tak koi history nahi hai.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Naya Gift Code Banayein -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
@@ -137,7 +161,7 @@
             document.getElementById('crashInput').value = savedCrash;
             document.getElementById('crashStatusMsg').innerText = `Current Override: ${savedCrash}x par crash hoga`;
         }
-        loadAdminRequests();
+        loadAdminData();
     });
 
     function setCrashPoint() {
@@ -153,7 +177,7 @@
         alert(`Crash point successfully ${numVal}x set kar diya gaya hai!`);
     }
 
-    function loadAdminRequests() {
+    function loadAdminData() {
         // Load Deposits
         let deposits = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
         let pendingDeps = deposits.filter(d => d.status === 'Pending');
@@ -163,7 +187,7 @@
         if(pendingDeps.length === 0) {
             depHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending deposit request nahi hai.</td></tr>`;
         } else {
-            pendingDeps.forEach((item, index) => {
+            pendingDeps.forEach(item => {
                 depHtml += `<tr>
                     <td><b>${item.uid}</b></td>
                     <td style="color: #4ade80;">₹${item.amount}</td>
@@ -188,7 +212,7 @@
         if(pendingWiths.length === 0) {
             withHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending withdrawal request nahi hai.</td></tr>`;
         } else {
-            pendingWiths.forEach((item, index) => {
+            pendingWiths.forEach(item => {
                 withHtml += `<tr>
                     <td><b>${item.uid}</b></td>
                     <td style="color: #ef4444;">₹${item.amount}</td>
@@ -203,6 +227,39 @@
             });
         }
         document.getElementById('withdrawalTableBody').innerHTML = withHtml;
+
+        // Load Full History (All Deposits & Withdrawals Combined)
+        let allHistory = [];
+        deposits.forEach(d => {
+            allHistory.push({ uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id });
+        });
+        withdrawals.forEach(w => {
+            allHistory.push({ uid: w.uid, type: 'Withdrawal', amount: w.amount, status: w.status, time: w.id });
+        });
+
+        // Sort by newest first
+        allHistory.sort((a, b) => b.time - a.time);
+
+        let histHtml = '';
+        if(allHistory.length === 0) {
+            histHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi tak koi history nahi hai.</td></tr>`;
+        } else {
+            allHistory.forEach(h => {
+                let statusBadge = `<span class="badge-pending">Pending</span>`;
+                if(h.status === 'Approved') statusBadge = `<span class="badge-approved">Approved</span>`;
+                if(h.status === 'Rejected') statusBadge = `<span class="badge-rejected">Rejected</span>`;
+
+                let typeColor = (h.type === 'Deposit') ? 'color: #4ade80;' : 'color: #ef4444;';
+
+                histHtml += `<tr>
+                    <td><b>${h.uid}</b></td>
+                    <td><span style="${typeColor} font-weight: bold;">${h.type}</span></td>
+                    <td>₹${h.amount}</td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+            });
+        }
+        document.getElementById('historyTableBody').innerHTML = histHtml;
     }
 
     function approveDeposit(id) {
@@ -212,13 +269,12 @@
             req.status = 'Approved';
             localStorage.setItem('skynova_deposit_requests', JSON.stringify(deposits));
 
-            // Add amount to user balance if matching UID or general balance sync
             let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
             currentBal += parseFloat(req.amount);
             localStorage.setItem('skynova_balance', currentBal.toFixed(2));
 
             alert(`Deposit of ₹${req.amount} approved successfully!`);
-            loadAdminRequests();
+            loadAdminData();
         }
     }
 
@@ -229,7 +285,7 @@
             req.status = 'Rejected';
             localStorage.setItem('skynova_deposit_requests', JSON.stringify(deposits));
             alert("Deposit request rejected.");
-            loadAdminRequests();
+            loadAdminData();
         }
     }
 
@@ -240,7 +296,7 @@
             req.status = 'Approved';
             localStorage.setItem('skynova_withdraw_requests', JSON.stringify(withdrawals));
             alert(`Withdrawal of ₹${req.amount} approved successfully!`);
-            loadAdminRequests();
+            loadAdminData();
         }
     }
 
@@ -251,13 +307,12 @@
             req.status = 'Rejected';
             localStorage.setItem('skynova_withdraw_requests', JSON.stringify(withdrawals));
             
-            // Refund amount back to balance on rejection
             let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
             currentBal += parseFloat(req.amount);
             localStorage.setItem('skynova_balance', currentBal.toFixed(2));
 
             alert("Withdrawal request rejected and amount refunded.");
-            loadAdminRequests();
+            loadAdminData();
         }
     }
 
