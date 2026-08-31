@@ -20,12 +20,10 @@ app.use(express.static(path.join(__dirname)));
 const users = [];
 let manualCrashOverride = null;
 
-// Root Route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// All HTML Pages Routes
 app.get('/home.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
@@ -66,7 +64,6 @@ app.get('/api/get-crash', (req, res) => {
     res.json({ crash: manualCrashOverride });
 });
 
-// Signup Route
 app.post('/api/signup', (req, res) => {
     const { mobile, password, inviteCode } = req.body;
     if (!mobile || mobile.length !== 10 || isNaN(mobile)) {
@@ -80,7 +77,6 @@ app.post('/api/signup', (req, res) => {
     res.json({ success: true, message: "SkyNova Account Created Successfully!" });
 });
 
-// Login Route
 app.post('/api/login', (req, res) => {
     const { mobile, password } = req.body;
     const user = users.find(u => u.mobile === mobile && u.password === password);

@@ -63,11 +63,72 @@
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;" id="currentCrashStatus">Current Manual Override: <span style="color: #f59e0b;">Random (Default)</span></p>
     </div>
+
+    <!-- Gift Code Generator Section -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 160px;">
+                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Gift Code:</label>
+                <input type="text" id="adminGiftCode" placeholder="jaise: BONUS500" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px; text-transform: uppercase;">
+            </div>
+            <div style="flex: 1; min-width: 160px;">
+                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Amount (₹):</label>
+                <input type="number" id="adminGiftAmount" placeholder="e.g. 200" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px;">
+            </div>
+            <div style="flex: 1; min-width: 160px;">
+                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Limit (Users):</label>
+                <input type="number" id="adminGiftLimit" value="1" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px;">
+            </div>
+            <div style="margin-top: 18px;">
+                <button onclick="createNewGiftCode()" class="btn-approve" style="padding: 10px 20px; font-size: 14px;">Save Karein</button>
+            </div>
+        </div>
+        <p style="font-size: 12px; color: #4ade80; margin-top: 10px;" id="giftSuccessMsg"></p>
+    </div>
+
+    <!-- Pending Deposit Requests -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-wallet"></i> Pending Deposit Requests</div>
+        <table>
+            <thead><tr><th>UID</th><th>Amount</th><th>UTR ID</th><th>Action</th></tr></thead>
+            <tbody id="depositTableBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending deposit nahi hai.</td></tr></tbody>
+        </table>
+    </div>
+
+    <!-- Pending Withdrawal Requests -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-money-bill-transfer"></i> Pending Withdrawal Requests</div>
+        <table>
+            <thead><tr><th>UID</th><th>Amount</th><th>UPI ID</th><th>Action</th></tr></thead>
+            <tbody id="withdrawTableBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending withdrawal nahi hai.</td></tr></tbody>
+        </table>
+    </div>
+
+    <!-- Deposit History -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Deposit History</div>
+        <table>
+            <thead><tr><th>UID</th><th>Amount</th><th>UTR ID</th><th>Status</th></tr></thead>
+            <tbody id="depositHistoryBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi history nahi hai.</td></tr></tbody>
+        </table>
+    </div>
+
+    <!-- Withdrawal History -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</div>
+        <table>
+            <thead><tr><th>UID</th><th>Amount</th><th>UPI ID</th><th>Status</th></tr></thead>
+            <tbody id="withdrawHistoryBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi history nahi hai.</td></tr></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         checkActiveOverride();
+        loadRequests();
+        loadHistoryRecords();
     });
 
     async function setCustomCrash() {
@@ -104,6 +165,131 @@
         } catch (err) {
             console.error("Could not fetch crash override");
         }
+    }
+
+    function createNewGiftCode() {
+        let code = document.getElementById('adminGiftCode').value.trim().toUpperCase();
+        let amount = parseFloat(document.getElementById('adminGiftAmount').value);
+        let limit = parseInt(document.getElementById('adminGiftLimit').value) || 1;
+
+        if(!code || isNaN(amount) || amount <= 0) {
+            alert("Kripya sahi code aur amount dalein!");
+            return;
+        }
+
+        let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
+        giftDb[code] = { amount: amount, maxUses: limit, usedCount: 0, claimedUsers: [] };
+        localStorage.setItem('skynova_gift_codes', JSON.stringify(giftDb));
+
+        document.getElementById('giftSuccessMsg').innerText = `Success! Code '${code}' (₹${amount}) ban gaya hai.`;
+        document.getElementById('adminGiftCode').value = '';
+        document.getElementById('adminGiftAmount').value = '';
+    }
+
+    function loadRequests() {
+        let deposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
+        let withdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
+
+        document.getElementById('pendingDepositsCount').innerText = deposits.length;
+        document.getElementById('pendingWithdrawalsCount').innerText = withdraws.length;
+
+        let depBody = document.getElementById('depositTableBody');
+        if (deposits.length > 0) {
+            depBody.innerHTML = '';
+            deposits.forEach((item, index) => {
+                depBody.innerHTML += `<tr><td>${item.uid}</td><td style="color: #4ade80; font-weight: bold;">₹${item.amount}</td><td>${item.utr}</td><td><button class="btn-approve" onclick="approveDeposit(${index})">Approve</button> <button class="btn-reject" onclick="rejectDeposit(${index})">Reject</button></td></tr>`;
+            });
+        }
+
+        let witBody = document.getElementById('withdrawTableBody');
+        if (withdraws.length > 0) {
+            witBody.innerHTML = '';
+            withdraws.forEach((item, index) => {
+                witBody.innerHTML += `<tr><td>${item.uid}</td><td style="color: #f43f5e; font-weight: bold;">₹${item.amount}</td><td>${item.upi}</td><td><button class="btn-approve" onclick="approveWithdraw(${index})">Approve</button> <button class="btn-reject" onclick="rejectWithdraw(${index})">Reject</button></td></tr>`;
+            });
+        }
+    }
+
+    function loadHistoryRecords() {
+        let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
+        let depHistBody = document.getElementById('depositHistoryBody');
+        if (depHistory.length > 0) {
+            depHistBody.innerHTML = '';
+            depHistory.forEach(item => {
+                depHistBody.innerHTML += `<tr><td>${item.uid}</td><td>₹${item.amount}</td><td>${item.utr}</td><td style="color: #4ade80;">${item.status}</td></tr>`;
+            });
+        }
+
+        let witHistory = JSON.parse(localStorage.getItem('skynova_withdrawal_history') || '[]');
+        let witHistBody = document.getElementById('withdrawHistoryBody');
+        if (witHistory.length > 0) {
+            witHistBody.innerHTML = '';
+            witHistory.forEach(item => {
+                witHistBody.innerHTML += `<tr><td>${item.uid}</td><td>₹${item.amount}</td><td>${item.upi}</td><td style="color: #f43f5e;">${item.status}</td></tr>`;
+            });
+        }
+    }
+
+    function approveDeposit(index) {
+        let deposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
+        let item = deposits.splice(index, 1)[0];
+        localStorage.setItem('skynova_pending_deposits', JSON.stringify(deposits));
+        
+        let bal = parseFloat(localStorage.getItem('skynova_balance') || '69.00') + parseFloat(item.amount);
+        localStorage.setItem('skynova_balance', bal.toFixed(2));
+
+        let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
+        depHistory.unshift({ ...item, status: 'Approved' });
+        localStorage.setItem('skynova_deposit_history', JSON.stringify(depHistory));
+
+        alert("Deposit Approved!");
+        loadRequests();
+        loadHistoryRecords();
+    }
+
+    function rejectDeposit(index) {
+        let deposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
+        let item = deposits.splice(index, 1)[0];
+        localStorage.setItem('skynova_pending_deposits', JSON.stringify(deposits));
+
+        let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
+        depHistory.unshift({ ...item, status: 'Rejected' });
+        localStorage.setItem('skynova_deposit_history', JSON.stringify(depHistory));
+
+        alert("Deposit Rejected!");
+        loadRequests();
+        loadHistoryRecords();
+    }
+
+    function approveWithdraw(index) {
+        let withdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
+        let item = withdraws.splice(index, 1)[0];
+        localStorage.setItem('skynova_pending_withdraws', JSON.stringify(withdraws));
+
+        let witHistory = JSON.parse(localStorage.getItem('skynova_withdrawal_history') || '[]');
+        witHistory.unshift({ ...item, status: 'Approved' });
+        localStorage.setItem('skynova_withdrawal_history', JSON.stringify(witHistory));
+
+        alert("Withdrawal Approved!");
+        loadRequests();
+        loadHistoryRecords();
+    }
+
+    function rejectWithdraw(index) {
+        let withdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
+        let item = withdraws.splice(index, 1)[0];
+        localStorage.setItem('skynova_pending_withdraws', JSON.stringify(withdraws));
+        
+        let bal = parseFloat(localStorage.getItem('skynova_balance') || '69.00') + parseFloat(item.amount);
+        localStorage.setItem('skynova_balance', bal.toFixed(2));
+
+        let witHistory = JSON.parse(localStorage.getItem('skynova_withdrawal_history') || '[]');
+        witHistory.unshift({ ...item, status: 'Rejected & Refunded' });
+        localStorage.setItem('skynova_withdrawal_history', JSON.stringify(witHistory));
+
+        alert("Withdrawal Rejected & Refunded!");
+        loadRequests();
+        loadHistoryRecords();
     }
 </script>
 </body>
