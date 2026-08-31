@@ -52,11 +52,12 @@
         </div>
     </div>
 
+    <!-- Period-wise Crash Point Control -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Period-wise Crash Point Control</div>
         <div class="form-group">
             <label>Target Period Number:</label>
-            <input type="text" id="targetPeriodInput" class="form-control" placeholder="jaise: 2026083105">
+            <input type="text" id="targetPeriodInput" class="form-control" placeholder="jaise: 2097610105">
         </div>
         <div class="form-group">
             <label>Crash Multiplier (Kitne guna par crash hoga):</label>
@@ -66,6 +67,7 @@
         <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
     </div>
 
+    <!-- Live Game Bets -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Current Round)</div>
         <div style="overflow-x: auto;">
@@ -80,6 +82,7 @@
         </div>
     </div>
 
+    <!-- Pending Deposit Requests -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-wallet"></i> User Deposit Requests (Pending)</div>
         <div style="overflow-x: auto;">
@@ -94,6 +97,7 @@
         </div>
     </div>
 
+    <!-- Pending Withdrawal Requests -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> User Withdrawal Requests (Pending)</div>
         <div style="overflow-x: auto;">
@@ -108,6 +112,7 @@
         </div>
     </div>
 
+    <!-- User History -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History</div>
         <div style="overflow-x: auto;">
@@ -122,6 +127,7 @@
         </div>
     </div>
 
+    <!-- Gift Code Creator -->
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
         <div class="form-group">
@@ -152,9 +158,9 @@
 
     function startAdminPeriodTicker() {
         setInterval(() => {
-            let now = Math.floor(Date.now() / 1000);
+            let nowSec = Math.floor(Date.now() / 1000);
             let totalCycle = 25;
-            let periodId = 2026083100 + Math.floor(now / totalCycle);
+            let periodId = 2097610100 + Math.floor(nowSec / totalCycle);
             let periodEl = document.getElementById('adminPeriodDisplay');
             if(periodEl) periodEl.innerText = periodId;
         }, 1000);
@@ -163,7 +169,7 @@
     async function fetchCloudData() {
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
+                headers: { 'X-Master-Key': API_KEY, 'Cache-Control': 'no-cache' }
             });
             let json = await res.json();
             let data = json.record;
@@ -242,7 +248,7 @@
 
             if(updateRes.ok) {
                 document.getElementById('crashStatusMsg').innerText = `Period ${period} -> ${crashVal}x set ho gaya!`;
-                alert(`Period ${period} ke liye crash multiplier ${crashVal}x successfully set ho gaya hai!`);
+                alert(`Success! Period ${period} ke liye ${crashVal}x cloud par save ho gaya hai.`);
             }
         } catch(e) {
             alert("Error setting period crash.");
