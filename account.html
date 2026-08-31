@@ -14,13 +14,22 @@
         .wallet-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .wallet-btn { background-color: white; color: #e11d48; border: none; padding: 12px 5px; border-radius: 12px; font-weight: bold; font-size: 13px; text-align: center; text-decoration: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .menu-container { margin: 12px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #1f2937; font-weight: 500; font-size: 14px; }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #1f2937; font-weight: 500; font-size: 14px; cursor: pointer; }
         .menu-item:last-child { border-bottom: none; }
         .menu-left { display: flex; align-items: center; gap: 12px; }
         .logout-btn-container { margin: 15px 12px; }
         .logout-btn { background-color: white; color: #e11d48; border: 1px solid #e11d48; width: 100%; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Badi aur Behtar Navigation Bar */
+        /* Khubsurat Modal Styling */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 100; padding: 20px; }
+        .modal-content { background-color: #ffffff; color: #1f2937; padding: 25px; border-radius: 16px; width: 100%; max-width: 330px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 2px solid #e11d48; animation: scaleUp 0.2s ease-in-out; }
+        @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 16px; margin: 15px 0; outline: none; box-sizing: border-box; text-align: center; font-weight: bold; text-transform: uppercase; }
+        .modal-input:focus { border-color: #e11d48; }
+        .modal-btn { background: linear-gradient(135deg, #e11d48, #be123c); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 15px; width: 100%; cursor: pointer; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.3); }
+        .modal-close { background: #e5e7eb; color: #4b5563; border: none; padding: 10px; border-radius: 10px; font-weight: bold; font-size: 14px; width: 100%; cursor: pointer; margin-top: 10px; }
+
+        /* Navigation Bar */
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: bold; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
         .nav-item i { font-size: 20px; }
@@ -35,45 +44,96 @@
 </div>
 
 <div class="wallet-card">
-    <div style="font-size: 13px; opacity: 0.9;"><i class="fa-solid fa-wallet"></i> BALANCE</div>
+    <div style="font-size: 13px; opacity: 0.9;"><i class="fa-solid fa-wallet"></i> <span data-translate="balanceTitle">BALANCE</span></div>
     <div class="wallet-balance">₹<span id="userBalance">326.10</span></div>
     <div class="wallet-actions">
-        <a href="deposit.html" class="wallet-btn"><i class="fa-solid fa-wallet text-lg"></i> Deposit</a>
-        <a href="withdraw.html" class="wallet-btn"><i class="fa-solid fa-money-bill-transfer text-lg"></i> Withdraw</a>
+        <a href="deposit.html" class="wallet-btn"><i class="fa-solid fa-wallet text-lg"></i> <span data-translate="depositBtn">Deposit</span></a>
+        <a href="withdraw.html" class="wallet-btn"><i class="fa-solid fa-money-bill-transfer text-lg"></i> <span data-translate="withdrawBtn">Withdraw</span></a>
         <a href="https://t.me/skynovaa11" target="_blank" class="wallet-btn"><i class="fa-brands fa-telegram text-lg"></i> Telegram</a>
     </div>
 </div>
 
 <div class="menu-container">
-    <a href="#" class="menu-item" onclick="openGiftModal(event)">
-        <div class="menu-left"><i class="fa-solid fa-gift text-rose-500"></i> gift exchange</div>
+    <div class="menu-item" onclick="openGiftModal()">
+        <div class="menu-left"><i class="fa-solid fa-gift text-rose-500"></i> <span data-translate="giftExchange">gift exchange</span></div>
         <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
-    </a>
-    <a href="#" class="menu-item">
-        <div class="menu-left"><i class="fa-solid fa-globe text-rose-500"></i> language change</div>
-        <span style="color: #e11d48; font-weight: bold; font-size: 13px;">EN</span>
-    </a>
+    </div>
+    <div class="menu-item" onclick="toggleLanguage()">
+        <div class="menu-left"><i class="fa-solid fa-globe text-rose-500"></i> <span data-translate="langChange">language change</span></div>
+        <span id="langIndicator" style="color: #e11d48; font-weight: bold; font-size: 13px;">EN</span>
+    </div>
 </div>
 
 <div class="menu-container">
-    <div style="padding: 12px 20px; font-size: 12px; color: #9ca3af; font-weight: bold; border-bottom: 1px solid #f3f4f6;">SERVICE CENTER</div>
+    <div style="padding: 12px 20px; font-size: 12px; color: #9ca3af; font-weight: bold; border-bottom: 1px solid #f3f4f6;" data-translate="serviceCenter">SERVICE CENTER</div>
     <a href="https://t.me/Skynovaa1_bot" target="_blank" class="menu-item">
-        <div class="menu-left"><i class="fa-solid fa-headset text-rose-500"></i> Customer Service</div>
+        <div class="menu-left"><i class="fa-solid fa-headset text-rose-500"></i> <span data-translate="customerService">Customer Service</span></div>
         <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
     </a>
 </div>
 
 <div class="logout-btn-container">
-    <button class="logout-btn" onclick="logoutUser()"><i class="fa-solid fa-power-off"></i> log out</button>
+    <button class="logout-btn" onclick="logoutUser()"><i class="fa-solid fa-power-off"></i> <span data-translate="logoutBtn">log out</span></button>
+</div>
+
+<!-- Gift Code Modal Popup -->
+<div id="giftModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: #e11d48; margin-top: 0; margin-bottom: 5px;"><i class="fa-solid fa-gift"></i> <span data-translate="modalTitle">Gift Exchange</span></h3>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;" data-translate="modalDesc">Apna gift code niche enter karein:</p>
+        <input type="text" id="giftCodeInput" class="modal-input" placeholder="ENTER CODE">
+        <button class="modal-btn" onclick="claimGiftCode()" data-translate="modalClaimBtn">Claim Bonus</button>
+        <button class="modal-close" onclick="closeGiftModal()" data-translate="modalCancelBtn">Cancel</button>
+    </div>
 </div>
 
 <div class="navbar">
-    <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="refer.html" class="nav-item"><i class="fa-solid fa-gift"></i> Refer & Earn</a>
-    <a href="account.html" class="nav-item active"><i class="fa-solid fa-user"></i> Account</a>
+    <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i> <span data-translate="navHome">Home</span></a>
+    <a href="refer.html" class="nav-item"><i class="fa-solid fa-gift"></i> <span data-translate="navRefer">Refer & Earn</span></a>
+    <a href="account.html" class="nav-item active"><i class="fa-solid fa-user"></i> <span data-translate="navAccount">Account</span></a>
 </div>
 
 <script>
+    // Language Dictionary
+    const translations = {
+        EN: {
+            balanceTitle: "BALANCE",
+            depositBtn: "Deposit",
+            withdrawBtn: "Withdraw",
+            giftExchange: "gift exchange",
+            langChange: "language change",
+            serviceCenter: "SERVICE CENTER",
+            customerService: "Customer Service",
+            logoutBtn: "log out",
+            modalTitle: "Gift Exchange",
+            modalDesc: "Apna gift code niche enter karein:",
+            modalClaimBtn: "Claim Bonus",
+            modalCancelBtn: "Cancel",
+            navHome: "Home",
+            navRefer: "Refer & Earn",
+            navAccount: "Account"
+        },
+        HI: {
+            balanceTitle: "शेष राशि (BALANCE)",
+            depositBtn: "डिपॉजिट",
+            withdrawBtn: "विथड्रawal",
+            giftExchange: "गिफ्ट एक्सचेंज",
+            langChange: "भाषा बदलें (Language)",
+            serviceCenter: "सहायता केंद्र (SERVICE CENTER)",
+            customerService: "ग्राहक सेवा (Customer Service)",
+            logoutBtn: "लॉग आउट",
+            modalTitle: "गिफ्ट एक्सचेंज",
+            modalDesc: "Enter your gift code below:",
+            modalClaimBtn: "বোনस प्राप्त करें (Claim)",
+            modalCancelBtn: "रद्द करें",
+            navHome: "होम",
+            navRefer: "रेफर एंड अर्न",
+            navAccount: "अकाउंट"
+        }
+    };
+
+    let currentLang = localStorage.getItem('skynova_lang') || 'EN';
+
     window.addEventListener('DOMContentLoaded', () => {
         let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
         document.getElementById('userBalance').innerText = currentBal.toFixed(2);
@@ -84,7 +144,26 @@
             localStorage.setItem('skynova_uid', savedUid);
         }
         document.getElementById('userUid').innerText = savedUid;
+
+        applyLanguage(currentLang);
     });
+
+    function toggleLanguage() {
+        currentLang = (currentLang === 'EN') ? 'HI' : 'EN';
+        localStorage.setItem('skynova_lang', currentLang);
+        applyLanguage(currentLang);
+    }
+
+    function applyLanguage(lang) {
+        document.getElementById('langIndicator').innerText = lang;
+        let elements = document.querySelectorAll('[data-translate]');
+        elements.forEach(el => {
+            let key = el.getAttribute('data-translate');
+            if(translations[lang][key]) {
+                el.innerText = translations[lang][key];
+            }
+        });
+    }
 
     function copyUid() {
         let uid = document.getElementById('userUid').innerText;
@@ -92,11 +171,21 @@
         alert("UID Successfully Copied: " + uid);
     }
 
-    function openGiftModal(e) {
-        e.preventDefault();
-        let code = prompt("Kripya Gift Code enter karein:");
-        if(!code) return;
-        code = code.trim().toUpperCase();
+    function openGiftModal() {
+        document.getElementById('giftCodeInput').value = '';
+        document.getElementById('giftModal').style.display = 'flex';
+    }
+
+    function closeGiftModal() {
+        document.getElementById('giftModal').style.display = 'none';
+    }
+
+    function claimGiftCode() {
+        let code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
+        if(!code) {
+            alert("Kripya valid gift code enter karein!");
+            return;
+        }
 
         let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
         if(giftDb[code]) {
@@ -120,6 +209,7 @@
             localStorage.setItem('skynova_balance', bal.toFixed(2));
 
             document.getElementById('userBalance').innerText = bal.toFixed(2);
+            closeGiftModal();
             alert(`Badhai ho! ₹${gift.amount} successfully aapke account me add ho gaye hain!`);
         } else {
             alert("Galat ya invalid gift code!");
