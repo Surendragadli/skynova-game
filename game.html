@@ -59,9 +59,7 @@
         <span>Period: <b id="periodNumber" style="color: #38bdf8;">2097610101</b></span>
         <span>History:</span>
     </div>
-    <div class="history-bar" id="historyBar">
-        <!-- History items dynamically inject honge -->
-    </div>
+    <div class="history-bar" id="historyBar"></div>
 
     <div class="game-screen">
         <div id="multiplier" class="multiplier-display">1.00x</div>
@@ -99,7 +97,7 @@
 
     let betPlaced = false;
     let activeBetAmount = 0;
-    let historyList = JSON.parse(localStorage.getItem('skynova_game_history_detailed') || '[{"period":"2097610103", "mult":"2.10x"}, {"period":"2097610104", "mult":"3.50x"}]');
+    let historyList = JSON.parse(localStorage.getItem('skynova_game_history_detailed') || '[]');
     let cloudPeriodCrashes = {};
     let lastProcessedPeriod = 0;
 
@@ -185,7 +183,7 @@
         }
     }
 
-    // High performance smooth loop with zero lag
+    // Ultra Smooth Game Loop (No Lag)
     function initGameEngine() {
         const WAIT_TIME = 13; // 13 seconds waiting
         const FLIGHT_TIME = 12; // 12 seconds flight
@@ -241,12 +239,12 @@
                 let flightElapsed = cycleTime - WAIT_TIME;
                 let currentMult = 1.00 + (flightElapsed * 0.35);
 
-                // Admin set crash check (supporting both string & number keys)
+                // Admin set crash check, agar set nahi hai toh alag-alag natural random crash generate hoga
                 let targetCrash = cloudPeriodCrashes[periodId.toString()] || cloudPeriodCrashes[periodId];
                 if (!targetCrash) {
                     let seed = periodId * 9301 + 49297;
-                    let randomVal = (seed % 400) / 100;
-                    targetCrash = parseFloat((1.20 + randomVal).toFixed(2));
+                    let randomVal = (seed % 600) / 100; // 0.00 to 6.00 range
+                    targetCrash = parseFloat((1.15 + randomVal).toFixed(2));
                 }
 
                 if (currentMult >= targetCrash || flightElapsed >= (FLIGHT_TIME - 0.5)) {
@@ -261,14 +259,14 @@
                 if (yPos > 120) yPos = 120;
                 plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(${22 - (flightElapsed * 1.2)}deg)`;
 
-                // Trigger Crash when target is reached and not already processed for this period
+                // Trigger Crash
                 if (currentMult >= targetCrash && lastProcessedPeriod !== periodId) {
                     lastProcessedPeriod = periodId;
                     triggerCrash(targetCrash, periodId);
                 }
             }
 
-        }, 40); // 40ms high-speed polling for ultra-smooth rendering
+        }, 30); // 30ms high frequency for super smooth animation
     }
 
     function cashOut() {
@@ -300,7 +298,6 @@
 
         let finalStr = crashVal.toFixed(2) + 'x';
         
-        // Check if period already exists in history to prevent duplicates
         if (!historyList.some(h => h.period == currentPeriodId)) {
             historyList.unshift({ period: currentPeriodId, mult: finalStr });
             if(historyList.length > 10) historyList.pop();

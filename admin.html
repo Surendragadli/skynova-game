@@ -232,7 +232,7 @@
 
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
+                headers: { 'X-Master-Key': API_KEY, 'Cache-Control': 'no-cache' }
             });
             let json = await res.json();
             let data = json.record;
@@ -310,9 +310,7 @@
                 document.getElementById('giftMaxUsesInput').value = '50';
                 alert(`Gift Code '${code}' (₹${amount}, Max Uses: ${maxUses}) successfully ban gaya hai!`);
             }
-        } catch(e) {
-            alert("Error creating gift code.");
-        }
+        } catch(e) {}
     }
 </script>
 </body>
