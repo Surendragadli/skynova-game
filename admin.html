@@ -10,7 +10,7 @@
         body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 50px; }
         header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
         .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
-        .container { max-width: 800px; margin: 15px auto; padding: 10px; }
+        .container { max-width: 850px; margin: 15px auto; padding: 10px; }
         .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .card-title { font-size: 16px; font-weight: bold; color: #38bdf8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .form-group { margin-bottom: 12px; }
@@ -19,12 +19,14 @@
         .form-control:focus { border-color: #38bdf8; }
         .btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; }
         .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
         .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
         .req-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         .req-table th { background-color: #1f293d; color: #38bdf8; padding: 10px; text-align: left; }
         .req-table td { padding: 10px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
+        .action-btns { display: flex; gap: 5px; }
     </style>
 </head>
 <body>
@@ -37,16 +39,16 @@
 <div class="container">
     <div class="stats-grid">
         <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Total Bet Amount</div>
+            <div style="font-size: 11px; color: #94a3b8;">Total Live Bets</div>
             <div class="stat-val" id="totalLiveBetAmount">₹0.00</div>
         </div>
         <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Current Period</div>
-            <div class="stat-val" id="adminPeriod" style="color: #38bdf8; font-size: 15px;">-</div>
+            <div style="font-size: 11px; color: #94a3b8;">Pending Dep.</div>
+            <div class="stat-val" id="pendingDepCount">0</div>
         </div>
         <div class="stat-box">
-            <div style="font-size: 11px; color: #94a3b8;">Cloud Status</div>
-            <div class="stat-val" style="color: #34d399; font-size: 14px;">Connected</div>
+            <div style="font-size: 11px; color: #94a3b8;">Pending With.</div>
+            <div class="stat-val" id="pendingWithCount">0</div>
         </div>
     </div>
 
@@ -54,8 +56,8 @@
     <div class="card">
         <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Aviator Game Multiplier Control (Cloud Sync)</div>
         <div class="form-group">
-            <label>Agla Crash Point Set Karein (e.g. 2.00):</label>
-            <input type="number" step="0.01" id="crashInput" class="form-control" placeholder="2.00">
+            <label>Agla Crash Point Set Karein:</label>
+            <input type="number" step="0.01" id="crashInput" class="form-control" placeholder="jaise: 2.00 ya 5.50">
         </div>
         <button class="btn btn-success" onclick="updateCloudCrash()">Cloud Par Set Karein</button>
         <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
@@ -63,7 +65,7 @@
 
     <!-- Live Game Bets -->
     <div class="card">
-        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (All Users)</div>
+        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Current Round)</div>
         <div style="overflow-x: auto;">
             <table class="req-table">
                 <thead>
@@ -75,6 +77,65 @@
             </table>
         </div>
     </div>
+
+    <!-- Pending Deposit Requests -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-wallet"></i> User Deposit Requests (Pending)</div>
+        <div style="overflow-x: auto;">
+            <table class="req-table">
+                <thead>
+                    <tr><th>UID</th><th>Amount</th><th>UTR / Ref</th><th>Action</th></tr>
+                </thead>
+                <tbody id="depositTableBody">
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading deposits...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pending Withdrawal Requests -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> User Withdrawal Requests (Pending)</div>
+        <div style="overflow-x: auto;">
+            <table class="req-table">
+                <thead>
+                    <tr><th>UID</th><th>Amount</th><th>Details (UPI/Bank)</th><th>Action</th></tr>
+                </thead>
+                <tbody id="withdrawalTableBody">
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading withdrawals...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Complete User History (Deposit & Withdrawal) -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History (All Records)</div>
+        <div style="overflow-x: auto;">
+            <table class="req-table">
+                <thead>
+                    <tr><th>UID</th><th>Type</th><th>Amount</th><th>Status</th></tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading history...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Gift Code Creator -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
+        <div class="form-group">
+            <label>Gift Code Name:</label>
+            <input type="text" id="giftCodeInput" class="form-control" placeholder="BONUS100">
+        </div>
+        <div class="form-group">
+            <label>Bonus Amount (₹):</label>
+            <input type="number" id="giftAmountInput" class="form-control" placeholder="100">
+        </div>
+        <button class="btn" onclick="createGiftCodeCloud()">Cloud Par Gift Code Banayein</button>
+    </div>
 </div>
 
 <script>
@@ -83,7 +144,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         fetchCloudData();
-        setInterval(fetchCloudData, 2000); // Har 2 second me live data sync
+        setInterval(fetchCloudData, 2000); // Har 2 second me auto-sync
     });
 
     async function fetchCloudData() {
@@ -94,12 +155,8 @@
             let json = await res.json();
             let data = json.record;
 
-            if(data.crash !== undefined && document.activeElement !== document.getElementById('crashInput')) {
+            if(data.crash) {
                 document.getElementById('crashInput').value = data.crash;
-            }
-
-            if(data.period) {
-                document.getElementById('adminPeriod').innerText = data.period;
             }
 
             // Live Bets
@@ -116,6 +173,40 @@
             }
             document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
             document.getElementById('totalLiveBetAmount').innerText = `₹${totalAmt.toFixed(2)}`;
+
+            // Deposits
+            let deposits = data.deposits || [];
+            let pendingDeps = deposits.filter(d => d.status === 'Pending');
+            document.getElementById('pendingDepCount').innerText = pendingDeps.length;
+            let depHtml = pendingDeps.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending deposit nahi hai.</td></tr>` :
+                pendingDeps.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#4ade80;">₹${item.amount}</td><td>${item.utr || 'N/A'}</td><td><div class="action-btns"><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('deposits', ${item.id}, 'Approved')">Approve</button><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('deposits', ${item.id}, 'Rejected')">Reject</button></div></td></tr>`).join('');
+            document.getElementById('depositTableBody').innerHTML = depHtml;
+
+            // Withdrawals
+            let withdrawals = data.withdrawals || [];
+            let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
+            document.getElementById('pendingWithCount').innerText = pendingWiths.length;
+            let withHtml = pendingWiths.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending withdrawal nahi hai.</td></tr>` :
+                pendingWiths.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#ef4444;">₹${item.amount}</td><td>${item.details || 'UPI'}</td><td><div class="action-btns"><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('withdrawals', ${item.id}, 'Approved')">Approve</button><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="updateReqStatus('withdrawals', ${item.id}, 'Rejected')">Reject</button></div></td></tr>`).join('');
+            document.getElementById('withdrawalTableBody').innerHTML = withHtml;
+
+            // Complete History (Deposits + Withdrawals)
+            let allHistory = [];
+            deposits.forEach(d => allHistory.push({ uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id || 0 }));
+            withdrawals.forEach(w => allHistory.push({ uid: w.uid, type: 'Withdrawal', amount: w.amount, status: w.status, time: w.id || 0 }));
+            allHistory.sort((a, b) => b.time - a.time);
+
+            let historyHtml = '';
+            if(allHistory.length === 0) {
+                historyHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Abhi tak koi history nahi hai.</td></tr>`;
+            } else {
+                allHistory.forEach(h => {
+                    let badgeColor = h.status === 'Approved' ? 'color: #4ade80;' : (h.status === 'Rejected' ? 'color: #ef4444;' : 'color: #fbbf24;');
+                    let typeColor = h.type === 'Deposit' ? 'color: #4ade80;' : 'color: #ef4444;';
+                    historyHtml += `<tr><td><b>${h.uid}</b></td><td><span style="${typeColor} font-weight: bold;">${h.type}</span></td><td>₹${h.amount}</td><td><span style="${badgeColor} font-weight: bold;">${h.status}</span></td></tr>`;
+                });
+            }
+            document.getElementById('historyTableBody').innerHTML = historyHtml;
 
         } catch(e) {
             console.error("Cloud fetch error:", e);
@@ -142,10 +233,70 @@
 
             if(updateRes.ok) {
                 document.getElementById('crashStatusMsg').innerText = `Successfully set to ${val}x!`;
-                alert(`Crash point ${val}x cloud par set ho gaya hai! Ab game usi par crash hoga.`);
+                alert(`Crash point ${val}x cloud par set ho gaya hai!`);
             }
         } catch(e) {
             alert("Error updating crash: " + e);
+        }
+    }
+
+    async function updateReqStatus(type, id, status) {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+            
+            let list = data[type] || [];
+            let req = list.find(item => item.id === id);
+            if(req) {
+                req.status = status;
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify(data)
+                });
+                alert(`Request ${status} successfully!`);
+                fetchCloudData();
+            }
+        } catch(e) {
+            alert("Error updating request status.");
+        }
+    }
+
+    async function createGiftCodeCloud() {
+        let code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
+        let amount = parseFloat(document.getElementById('giftAmountInput').value);
+
+        if(!code || isNaN(amount) || amount <= 0) {
+            alert("Sahi details bharein!");
+            return;
+        }
+
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+
+            if(!data.gifts) data.gifts = {};
+            data.gifts[code] = { amount: amount, maxUses: 50, usedCount: 0, claimedUsers: [] };
+
+            let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+
+            if(updateRes.ok) {
+                document.getElementById('giftCodeInput').value = '';
+                document.getElementById('giftAmountInput').value = '';
+                alert(`Gift Code '${code}' (₹${amount}) successfully ban gaya hai!`);
+            }
+        } catch(e) {
+            alert("Error creating gift code.");
         }
     }
 </script>
