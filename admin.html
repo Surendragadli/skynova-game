@@ -7,289 +7,131 @@
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding: 20px; }
-        header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; border-radius: 8px; margin-bottom: 20px; }
-        .container { max-width: 900px; margin: auto; }
-        .card { background-color: #161e2e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: 1px solid #1f293d; margin-bottom: 20px; }
-        .section-title { font-size: 16px; color: #38bdf8; margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; font-size: 13px; border-bottom: 1px solid #334155; }
-        th { background-color: #1f293d; color: #38bdf8; }
-        td { color: #cbd5e1; }
-        .btn-approve { background-color: #22c55e; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-reject { background-color: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background-color: #161e2e; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center; }
-        .stat-val { font-size: 22px; font-weight: bold; color: #4ade80; margin-top: 5px; }
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 50px; }
+        header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
+        .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
+        .home-link { color: #f59e0b; text-decoration: none; font-size: 14px; font-weight: bold; }
+        
+        .container { max-width: 600px; margin: 15px auto; padding: 10px; }
+        .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .card-title { font-size: 16px; font-weight: bold; color: #38bdf8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
+        .form-control { width: 100%; background-color: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; outline: none; box-sizing: border-box; }
+        .form-control:focus { border-color: #38bdf8; }
+        
+        .btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 5px; }
+        .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #064e3b; color: #34d399; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
+        .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
     </style>
 </head>
 <body>
 
+<header>
+    <div class="brand"><i class="fa-solid fa-shield-halved"></i> SkyNova Admin Panel</div>
+    <a href="home.html" class="home-link"><i class="fa-solid fa-house"></i> Home Par Jayein</a>
+</header>
+
 <div class="container">
-    <header>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-shield-halved text-2xl text-sky-400"></i>
-            <span style="font-size: 18px; font-weight: bold; color: #38bdf8;">SkyNova Admin Panel</span>
-        </div>
-        <a href="home.html" style="color: #94a3b8; text-decoration: none; font-size: 13px;"><i class="fa-solid fa-arrow-left"></i> Home Par Jayein</a>
-    </header>
-
+    <!-- System Status Row -->
     <div class="stats-grid">
-        <div class="stat-card">
-            <div style="font-size: 13px; color: #94a3b8;">System Status</div>
-            <div class="stat-val" style="font-size: 16px; color: #38bdf8;">Active (Live Server)</div>
+        <div class="stat-box">
+            <div style="font-size: 11px; color: #94a3b8;">Status</div>
+            <div class="stat-val" style="font-size: 14px; color: #34d399;">Active</div>
         </div>
-        <div class="stat-card">
-            <div style="font-size: 13px; color: #94a3b8;">Pending Deposits</div>
-            <div class="stat-val" id="pendingDepositsCount" style="color: #f59e0b;">0</div>
+        <div class="stat-box">
+            <div style="font-size: 11px; color: #94a3b8;">Pending Dep.</div>
+            <div class="stat-val">0</div>
         </div>
-        <div class="stat-card">
-            <div style="font-size: 13px; color: #94a3b8;">Pending Withdrawals</div>
-            <div class="stat-val" id="pendingWithdrawalsCount" style="color: #f43f5e;">0</div>
+        <div class="stat-box">
+            <div style="font-size: 11px; color: #94a3b8;">Pending With.</div>
+            <div class="stat-val">0</div>
         </div>
     </div>
 
-    <!-- Aviator Crash Control Section -->
+    <!-- Aviator Crash Point Control -->
     <div class="card">
-        <div class="section-title"><i class="fa-solid fa-plane-departure"></i> Aviator Game Multiplier Control (Next Crash)</div>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Agla Crash Point (Multiplier set karein):</label>
-                <input type="number" id="nextCrashInput" step="0.01" placeholder="e.g. 6.66" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; box-sizing: border-box;">
-            </div>
-            <div style="margin-top: 18px;">
-                <button onclick="setCustomCrash()" class="btn-approve" style="padding: 10px 20px; font-size: 14px;">Set Karein</button>
-            </div>
+        <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Aviator Game Multiplier Control (Next Crash)</div>
+        <div class="form-group">
+            <label>Agla Crash Point (Multiplier set karein):</label>
+            <input type="number" step="0.01" id="crashInput" class="form-control" placeholder="jaise: 2.00 ya 5.50">
         </div>
-        <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;" id="currentCrashStatus">Current Manual Override: <span style="color: #f59e0b;">Random (Default)</span></p>
+        <button class="btn btn-success" onclick="setCrashPoint()">Set Karein</button>
+        <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
     </div>
 
-    <!-- Gift Code Generator Section -->
+    <!-- Naya Gift Code Banayein -->
     <div class="card">
-        <div class="section-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 160px;">
-                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Gift Code:</label>
-                <input type="text" id="adminGiftCode" placeholder="jaise: BONUS500" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px; text-transform: uppercase;">
-            </div>
-            <div style="flex: 1; min-width: 160px;">
-                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Amount (₹):</label>
-                <input type="number" id="adminGiftAmount" placeholder="e.g. 200" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px;">
-            </div>
-            <div style="flex: 1; min-width: 160px;">
-                <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px;">Limit (Users):</label>
-                <input type="number" id="adminGiftLimit" value="1" style="width: 100%; background-color: #0b0f19; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #ffffff; font-size: 14px;">
-            </div>
-            <div style="margin-top: 18px;">
-                <button onclick="createNewGiftCode()" class="btn-approve" style="padding: 10px 20px; font-size: 14px;">Save Karein</button>
-            </div>
+        <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
+        <div class="form-group">
+            <label>Gift Code Name (jaise: BONUS500):</label>
+            <input type="text" id="giftCodeInput" class="form-control" placeholder="CODE NAME">
         </div>
-        <p style="font-size: 12px; color: #4ade80; margin-top: 10px;" id="giftSuccessMsg"></p>
-    </div>
-
-    <!-- Pending Deposit Requests -->
-    <div class="card">
-        <div class="section-title"><i class="fa-solid fa-wallet"></i> Pending Deposit Requests</div>
-        <table>
-            <thead><tr><th>UID</th><th>Amount</th><th>UTR ID</th><th>Action</th></tr></thead>
-            <tbody id="depositTableBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending deposit nahi hai.</td></tr></tbody>
-        </table>
-    </div>
-
-    <!-- Pending Withdrawal Requests -->
-    <div class="card">
-        <div class="section-title"><i class="fa-solid fa-money-bill-transfer"></i> Pending Withdrawal Requests</div>
-        <table>
-            <thead><tr><th>UID</th><th>Amount</th><th>UPI ID</th><th>Action</th></tr></thead>
-            <tbody id="withdrawTableBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending withdrawal nahi hai.</td></tr></tbody>
-        </table>
-    </div>
-
-    <!-- Deposit History -->
-    <div class="card">
-        <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Deposit History</div>
-        <table>
-            <thead><tr><th>UID</th><th>Amount</th><th>UTR ID</th><th>Status</th></tr></thead>
-            <tbody id="depositHistoryBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi history nahi hai.</td></tr></tbody>
-        </table>
-    </div>
-
-    <!-- Withdrawal History -->
-    <div class="card">
-        <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</div>
-        <table>
-            <thead><tr><th>UID</th><th>Amount</th><th>UPI ID</th><th>Status</th></tr></thead>
-            <tbody id="withdrawHistoryBody"><tr><td colspan="4" style="text-align: center; color: #64748b;">Koi history nahi hai.</td></tr></tbody>
-        </table>
+        <div class="form-group">
+            <label>Bonus Amount (₹):</label>
+            <input type="number" id="giftAmountInput" class="form-control" placeholder="jaise: 100">
+        </div>
+        <div class="form-group">
+            <label>Max Uses (Kitne log use kar sakte hain):</label>
+            <input type="number" id="giftMaxUsesInput" class="form-control" value="50">
+        </div>
+        <button class="btn" onclick="createGiftCode()">Gift Code Banayein</button>
     </div>
 </div>
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        checkActiveOverride();
-        loadRequests();
-        loadHistoryRecords();
+        let savedCrash = localStorage.getItem('skynova_admin_crash');
+        if(savedCrash) {
+            document.getElementById('crashInput').value = savedCrash;
+            document.getElementById('crashStatusMsg').innerText = `Current Override: ${savedCrash}x par crash hoga`;
+        }
     });
 
-    async function setCustomCrash() {
-        let crashVal = document.getElementById('nextCrashInput').value;
-        if(!crashVal || crashVal < 1.00) {
-            alert("Kripya valid multiplier enter karein (e.g. 6.66)");
+    function setCrashPoint() {
+        let val = document.getElementById('crashInput').value;
+        if(!val || isNaN(val) || parseFloat(val) < 1.00) {
+            alert("Kripya valid multiplier dalein (1.00 ya zyada)!");
             return;
         }
 
-        try {
-            let response = await fetch('/api/set-crash', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ crashVal: crashVal })
-            });
-            let result = await response.json();
-            if(result.success) {
-                document.getElementById('currentCrashStatus').innerHTML = `Current Manual Override: <span style="color: #4ade80; font-weight: bold;">${crashVal}x par crash hoga</span>`;
-                alert("Success! Agla round " + crashVal + "x par crash hoga.");
-            }
-        } catch (err) {
-            alert("Server connection error!");
-        }
+        let numVal = parseFloat(val).toFixed(2);
+        localStorage.setItem('skynova_admin_crash', numVal);
+        localStorage.setItem('aviator_override_crash', numVal); // Game engine sync
+
+        document.getElementById('crashStatusMsg').innerText = `Successfully Set! Next crash at ${numVal}x`;
+        alert(`Crash point successfully ${numVal}x set kar diya gaya hai!`);
     }
 
-    async function checkActiveOverride() {
-        try {
-            let response = await fetch('/api/get-crash');
-            let data = await response.json();
-            if (data.crash) {
-                document.getElementById('nextCrashInput').value = data.crash;
-                document.getElementById('currentCrashStatus').innerHTML = `Current Manual Override: <span style="color: #4ade80; font-weight: bold;">${data.crash}x par crash hoga</span>`;
-            }
-        } catch (err) {
-            console.error("Could not fetch crash override");
-        }
-    }
+    function createGiftCode() {
+        let code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
+        let amount = parseFloat(document.getElementById('giftAmountInput').value);
+        let maxUses = parseInt(document.getElementById('giftMaxUsesInput').value);
 
-    function createNewGiftCode() {
-        let code = document.getElementById('adminGiftCode').value.trim().toUpperCase();
-        let amount = parseFloat(document.getElementById('adminGiftAmount').value);
-        let limit = parseInt(document.getElementById('adminGiftLimit').value) || 1;
-
-        if(!code || isNaN(amount) || amount <= 0) {
-            alert("Kripya sahi code aur amount dalein!");
+        if(!code || isNaN(amount) || amount <= 0 || isNaN(maxUses) || maxUses <= 0) {
+            alert("Kripya sabhi fields sahi se bharein!");
             return;
         }
 
         let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
-        giftDb[code] = { amount: amount, maxUses: limit, usedCount: 0, claimedUsers: [] };
+        
+        giftDb[code] = {
+            amount: amount,
+            maxUses: maxUses,
+            usedCount: 0,
+            claimedUsers: []
+        };
+
         localStorage.setItem('skynova_gift_codes', JSON.stringify(giftDb));
-
-        document.getElementById('giftSuccessMsg').innerText = `Success! Code '${code}' (₹${amount}) ban gaya hai.`;
-        document.getElementById('adminGiftCode').value = '';
-        document.getElementById('adminGiftAmount').value = '';
-    }
-
-    function loadRequests() {
-        let deposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
-        let withdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
-
-        document.getElementById('pendingDepositsCount').innerText = deposits.length;
-        document.getElementById('pendingWithdrawalsCount').innerText = withdraws.length;
-
-        let depBody = document.getElementById('depositTableBody');
-        if (deposits.length > 0) {
-            depBody.innerHTML = '';
-            deposits.forEach((item, index) => {
-                depBody.innerHTML += `<tr><td>${item.uid}</td><td style="color: #4ade80; font-weight: bold;">₹${item.amount}</td><td>${item.utr}</td><td><button class="btn-approve" onclick="approveDeposit(${index})">Approve</button> <button class="btn-reject" onclick="rejectDeposit(${index})">Reject</button></td></tr>`;
-            });
-        }
-
-        let witBody = document.getElementById('withdrawTableBody');
-        if (withdraws.length > 0) {
-            witBody.innerHTML = '';
-            withdraws.forEach((item, index) => {
-                witBody.innerHTML += `<tr><td>${item.uid}</td><td style="color: #f43f5e; font-weight: bold;">₹${item.amount}</td><td>${item.upi}</td><td><button class="btn-approve" onclick="approveWithdraw(${index})">Approve</button> <button class="btn-reject" onclick="rejectWithdraw(${index})">Reject</button></td></tr>`;
-            });
-        }
-    }
-
-    function loadHistoryRecords() {
-        let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
-        let depHistBody = document.getElementById('depositHistoryBody');
-        if (depHistory.length > 0) {
-            depHistBody.innerHTML = '';
-            depHistory.forEach(item => {
-                depHistBody.innerHTML += `<tr><td>${item.uid}</td><td>₹${item.amount}</td><td>${item.utr}</td><td style="color: #4ade80;">${item.status}</td></tr>`;
-            });
-        }
-
-        let witHistory = JSON.parse(localStorage.getItem('skynova_withdrawal_history') || '[]');
-        let witHistBody = document.getElementById('withdrawHistoryBody');
-        if (witHistory.length > 0) {
-            witHistBody.innerHTML = '';
-            witHistory.forEach(item => {
-                witHistBody.innerHTML += `<tr><td>${item.uid}</td><td>₹${item.amount}</td><td>${item.upi}</td><td style="color: #f43f5e;">${item.status}</td></tr>`;
-            });
-        }
-    }
-
-    function approveDeposit(index) {
-        let deposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
-        let item = deposits.splice(index, 1)[0];
-        localStorage.setItem('skynova_pending_deposits', JSON.stringify(deposits));
         
-        let bal = parseFloat(localStorage.getItem('skynova_balance') || '69.00') + parseFloat(item.amount);
-        localStorage.setItem('skynova_balance', bal.toFixed(2));
-
-        let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
-        depHistory.unshift({ ...item, status: 'Approved' });
-        localStorage.setItem('skynova_deposit_history', JSON.stringify(depHistory));
-
-        alert("Deposit Approved!");
-        loadRequests();
-        loadHistoryRecords();
-    }
-
-    function rejectDeposit(index) {
-        let deposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
-        let item = deposits.splice(index, 1)[0];
-        localStorage.setItem('skynova_pending_deposits', JSON.stringify(deposits));
-
-        let depHistory = JSON.parse(localStorage.getItem('skynova_deposit_history') || '[]');
-        depHistory.unshift({ ...item, status: 'Rejected' });
-        localStorage.setItem('skynova_deposit_history', JSON.stringify(depHistory));
-
-        alert("Deposit Rejected!");
-        loadRequests();
-        loadHistoryRecords();
-    }
-
-    function approveWithdraw(index) {
-        let withdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
-        let item = withdraws.splice(index, 1)[0];
-        localStorage.setItem('skynova_pending_withdraws', JSON.stringify(withdraws));
-
-        let witHistory = JSON.parse(localStorage.getItem('skynova_withdrawal_history') || '[]');
-        witHistory.unshift({ ...item, status: 'Approved' });
-        localStorage.setItem('skynova_withdrawal_history', JSON.stringify(witHistory));
-
-        alert("Withdrawal Approved!");
-        loadRequests();
-        loadHistoryRecords();
-    }
-
-    function rejectWithdraw(index) {
-        let withdraws = JSON.parse(localStorage.getItem('skynova_pending_withdraws') || '[]');
-        let item = withdraws.splice(index, 1)[0];
-        localStorage.setItem('skynova_pending_withdraws', JSON.stringify(withdraws));
-        
-        let bal = parseFloat(localStorage.getItem('skynova_balance') || '69.00') + parseFloat(item.amount);
-        localStorage.setItem('skynova_balance', bal.toFixed(2));
-
-        let witHistory = JSON.parse(localStorage.getItem('skynova_withdrawal_history') || '[]');
-        witHistory.unshift({ ...item, status: 'Rejected & Refunded' });
-        localStorage.setItem('skynova_withdrawal_history', JSON.stringify(witHistory));
-
-        alert("Withdrawal Rejected & Refunded!");
-        loadRequests();
-        loadHistoryRecords();
+        document.getElementById('giftCodeInput').value = '';
+        document.getElementById('giftAmountInput').value = '';
+        alert(`Gift Code '${code}' (₹${amount}) successfully ban gaya hai! Ab user account se ise claim kar sakte hain.`);
     }
 </script>
 </body>
