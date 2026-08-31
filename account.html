@@ -176,7 +176,7 @@
         document.getElementById('giftModal').style.display = 'none';
     }
 
-    async function claimGiftCode() {
+    function claimGiftCode() {
         let inputCode = document.getElementById('giftCodeInput').value.trim().toUpperCase();
         if(!inputCode) {
             alert("Kripya valid gift code enter karein!");
@@ -184,14 +184,16 @@
         }
 
         let uid = localStorage.getItem('skynova_uid') || "794973";
-
-        // LocalStorage check as a robust backup
         let giftDb = JSON.parse(localStorage.getItem('skynova_gift_codes') || '{}');
+
+        // Match key case-insensitively
         let matchedKey = Object.keys(giftDb).find(k => k.trim().toUpperCase() === inputCode);
 
         if(matchedKey) {
             let gift = giftDb[matchedKey];
-            if(gift.claimedUsers && gift.claimedUsers.includes(uid)) {
+            if(!gift.claimedUsers) gift.claimedUsers = [];
+
+            if(gift.claimedUsers.includes(uid)) {
                 alert("Aap ye gift code pehle hi claim kar chuke hain!");
                 return;
             }
@@ -201,7 +203,6 @@
             }
 
             gift.usedCount++;
-            if(!gift.claimedUsers) gift.claimedUsers = [];
             gift.claimedUsers.push(uid);
             localStorage.setItem('skynova_gift_codes', JSON.stringify(giftDb));
 
