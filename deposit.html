@@ -41,7 +41,7 @@
         <a href="account.html" style="color: #38bdf8; text-decoration: none;"><i class="fa-solid fa-arrow-left text-lg"></i></a>
         <span>SkyNova - Deposit</span>
     </div>
-    <div style="font-size: 13px; color: #4ade80; font-weight: bold;">Bal: ₹0.65</div>
+    <div style="font-size: 13px; color: #4ade80; font-weight: bold;">Bal: ₹<span id="userBalance">69.00</span></div>
 </header>
 
 <div class="container">
@@ -100,6 +100,12 @@
 </div>
 
 <script>
+    // Page load hone par real balance load karein
+    window.addEventListener('DOMContentLoaded', () => {
+        let currentBal = parseFloat(localStorage.getItem('skynova_balance') || '69.00');
+        document.getElementById('userBalance').innerText = currentBal.toFixed(2);
+    });
+
     function setAmount(amount) {
         document.getElementById('customAmount').value = amount;
         let buttons = document.querySelectorAll('.amount-btn');
@@ -122,7 +128,7 @@
         document.getElementById('modalAmount').innerText = "₹" + amt;
         let upiLink = `upi://pay?pa=surendragadli32@okaxis&pn=SkyNova&am=${amt}&cu=INR`;
         document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiLink)}`;
-        document.getElementById('utrInput').value = ''; // Reset UTR field
+        document.getElementById('utrInput').value = ''; 
         document.getElementById('paymentModal').style.display = 'flex';
     }
 
@@ -138,11 +144,23 @@
 
     function submitUtr() {
         let utr = document.getElementById('utrInput').value.trim();
+        let amt = document.getElementById('customAmount').value;
         if(!utr || utr.length < 8) {
             alert("Kripya sahi UTR / Transaction ID enter karein!");
             return;
         }
-        alert("Recharge request submitted successfully!\nUTR ID: " + utr + "\nVerification ke baad balance aapke account me add kar diya jayega.");
+
+        // Pending deposit me save karein taaki admin panel par dikhe
+        let pendingDeposits = JSON.parse(localStorage.getItem('skynova_pending_deposits') || '[]');
+        pendingDeposits.push({
+            uid: "User_" + Math.floor(1000 + Math.random() * 9000),
+            amount: amt,
+            utr: utr,
+            time: new Date().toLocaleString()
+        });
+        localStorage.setItem('skynova_pending_deposits', JSON.stringify(pendingDeposits));
+
+        alert("Recharge request submitted successfully!\nUTR ID: " + utr + "\nAdmin approval ke baad balance add ho jayega.");
         closeModal();
     }
 </script>
