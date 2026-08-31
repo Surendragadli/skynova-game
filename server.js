@@ -20,20 +20,38 @@ app.use(express.static(path.join(__dirname)));
 const users = [];
 let manualCrashOverride = null;
 
-// Root route
+// Root Route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// HTML Pages routes
+// All HTML Pages Routes
 app.get('/home.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
+
 app.get('/game.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'game.html'));
 });
+
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/deposit.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'deposit.html'));
+});
+
+app.get('/withdraw.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'withdraw.html'));
+});
+
+app.get('/refer.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'refer.html'));
+});
+
+app.get('/account.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'account.html'));
 });
 
 // Admin Crash Control APIs
@@ -72,7 +90,6 @@ app.post('/api/login', (req, res) => {
     res.json({ success: true, message: "Login Successful!", balance: user.balance });
 });
 
-// Socket.io connection
 io.on('connection', (socket) => {
     console.log('A user connected: ' + socket.id);
     socket.on('disconnect', () => {

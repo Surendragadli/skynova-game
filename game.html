@@ -67,23 +67,6 @@
             <button class="action-btn btn-bet" id="btn1" onclick="handleBet(1)">BET</button>
         </div>
     </div>
-
-    <!-- Bet Panel 2 -->
-    <div class="bet-panel">
-        <div class="bet-row">
-            <div style="width: 46%;">
-                <div class="input-group">
-                    <input type="number" id="bet2Amount" value="10">
-                </div>
-                <div class="quick-btns">
-                    <button class="quick-btn" onclick="setBet(2, 10)">10</button>
-                    <button class="quick-btn" onclick="setBet(2, 50)">50</button>
-                    <button class="quick-btn" onclick="setBet(2, 100)">100</button>
-                </div>
-            </div>
-            <button class="action-btn btn-bet" id="btn2" onclick="handleBet(2)">BET</button>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -95,17 +78,15 @@
         updateUI();
     }
 
-    let bet1State = 0; 
-    let bet2State = 0;
+    let bet1State = 0;
     let bet1Amt = 0;
-    let bet2Amt = 0;
     let currentMultiplier = 1.00;
     let serverCrashOverride = null;
 
-    const WAIT_DURATION = 13000;   // 13 sec betting
-    const FLIGHT_DURATION = 10000; // 10 sec flying
-    const CRASH_HOLD_DURATION = 3000; // 3 sec crashed hold
-    const ROUND_DURATION = WAIT_DURATION + FLIGHT_DURATION + CRASH_HOLD_DURATION; 
+    const WAIT_DURATION = 13000;
+    const FLIGHT_DURATION = 10000;
+    const CRASH_HOLD_DURATION = 3000;
+    const ROUND_DURATION = WAIT_DURATION + FLIGHT_DURATION + CRASH_HOLD_DURATION;
 
     let lastRecordedPeriod = null;
 
@@ -117,7 +98,6 @@
         document.getElementById(`bet${panel}Amount`).value = val;
     }
 
-    // Server se live admin override fetch karne ke liye
     async function fetchServerCrashOverride() {
         try {
             let response = await fetch('/api/get-crash');
@@ -130,42 +110,9 @@
 
     setInterval(fetchServerCrashOverride, 2000);
 
-    function loadHistory() {
-        let historyBar = document.getElementById('historyBar');
-        historyBar.innerHTML = "";
-        let savedHistory = JSON.parse(localStorage.getItem('aviator_real_history')) || [];
-        savedHistory.sort((a, b) => b.period - a.period);
-
-        if (savedHistory.length === 0) {
-            historyBar.innerHTML = '<span style="color: #64748b; font-size: 12px; padding: 5px;">No history yet</span>';
-            return;
-        }
-
-        savedHistory.forEach(item => {
-            let chip = document.createElement('div');
-            chip.className = "history-chip";
-            chip.innerHTML = `${item.mult} <span>#${item.period}</span>`;
-            historyBar.appendChild(chip);
-        });
-    }
-
-    function saveToHistory(periodId, mult) {
-        let savedHistory = JSON.parse(localStorage.getItem('aviator_real_history')) || [];
-        let exists = savedHistory.some(item => item.period == periodId);
-        if (!exists) {
-            savedHistory.push({ period: periodId, mult: mult.toFixed(2) + "x" });
-            savedHistory.sort((a, b) => b.period - a.period);
-            if (savedHistory.length > 20) savedHistory = savedHistory.slice(0, 20);
-            localStorage.setItem('aviator_real_history', JSON.stringify(savedHistory));
-            loadHistory();
-        }
-    }
-
     updateUI();
-    loadHistory();
     fetchServerCrashOverride();
 
-    // --- Server Synced Game Engine ---
     setInterval(() => {
         let nowTimestamp = Date.now();
         let cycleTime = nowTimestamp % ROUND_DURATION;
@@ -174,15 +121,11 @@
         let currentPeriod = 202600000000 + epochRounds;
         document.getElementById('currentPeriodDisplay').innerText = currentPeriod;
 
-        // Base Natural Crash Point
         let seed = Math.sin(epochRounds) * 10000;
         let naturalCrashPoint = 1.20 + (Math.abs(seed - Math.floor(seed)) * 8.0);
-        
-        // Use Server Override if set by Admin Panel
         let roundCrashPoint = (serverCrashOverride !== null && !isNaN(serverCrashOverride)) ? parseFloat(serverCrashOverride) : naturalCrashPoint;
 
         if (cycleTime < WAIT_DURATION) {
-            // --- WAITING PHASE (13 seconds) ---
             let timeLeft = (WAIT_DURATION - cycleTime) / 1000;
             document.getElementById('multiplier').innerText = "1.00x";
             document.getElementById('multiplier').style.color = "#ffffff";
@@ -190,13 +133,9 @@
             document.getElementById('gameStatus').style.color = "#38bdf8";
 
             if (bet1State === 1) bet1State = 2;
-            if (bet2State === 1) bet2State = 2;
-
-            updateButtonUI(1, "WAITING");
-            updateButtonUI(2, "WAITING");
+            updateButtonUI(1);
         } 
         else if (cycleTime >= WAIT_DURATION && cycleTime < (WAIT_DURATION + FLIGHT_DURATION)) {
-            // --- FLYING PHASE (10 seconds) ---
             let flightTime = (cycleTime - WAIT_DURATION) / 1000; 
             let progress = flightTime / (FLIGHT_DURATION / 1000);
             
@@ -210,39 +149,28 @@
             document.getElementById('gameStatus').innerText = "Plane ud raha hai...";
             document.getElementById('gameStatus').style.color = "#94a3b8";
 
-            updateButtonUI(1, "FLYING");
-            updateButtonUI(2, "FLYING");
+            updateButtonUI(1);
         } 
         else {
-            // --- CRASHED PHASE ---
             currentMultiplier = roundCrashPoint;
-
             document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + "x";
             document.getElementById('multiplier').style.color = "#ef4444"; 
             document.getElementById('gameStatus').innerText = "Crashed!";
             document.getElementById('gameStatus').style.color = "#ef4444"; 
 
             if (bet1State === 2) bet1State = 4;
-            if (bet2State === 2) bet2State = 4;
-
-            if (lastRecordedPeriod !== currentPeriod) {
-                saveToHistory(currentPeriod, currentMultiplier);
-                lastRecordedPeriod = currentPeriod;
-            }
 
             if (cycleTime > (ROUND_DURATION - 500)) {
                 if (bet1State === 3 || bet1State === 4) bet1State = 0;
-                if (bet2State === 3 || bet2State === 4) bet2State = 0;
             }
 
-            updateButtonUI(1, "CRASHED");
-            updateButtonUI(2, "CRASHED");
+            updateButtonUI(1);
         }
     }, 100);
 
     function handleBet(panel) {
         let amtInput = parseFloat(document.getElementById(`bet${panel}Amount`).value);
-        let state = (panel === 1) ? bet1State : bet2State;
+        let state = bet1State;
         let bal = getBalance();
         let nowTimestamp = Date.now();
         let cycleTime = nowTimestamp % ROUND_DURATION;
@@ -259,69 +187,57 @@
             }
             bal -= amtInput;
             setBalance(bal);
-
-            if (panel === 1) { bet1Amt = amtInput; bet1State = 1; }
-            else { bet2Amt = amtInput; bet2State = 1; }
-            updateButtonUI(panel, "WAITING");
+            bet1Amt = amtInput; 
+            bet1State = 1;
+            updateButtonUI(1);
         } 
         else if (state === 1 && isWaitingPhase) { 
-            bal += (panel === 1) ? bet1Amt : bet2Amt;
+            bal += bet1Amt;
             setBalance(bal);
-
-            if (panel === 1) { bet1State = 0; } else { bet2State = 0; }
-            updateButtonUI(panel, "WAITING");
+            bet1State = 0;
+            updateButtonUI(1);
         } 
         else if (state === 2 && isWaitingPhase === false && cycleTime < (WAIT_DURATION + FLIGHT_DURATION)) { 
-            let amt = (panel === 1) ? bet1Amt : bet2Amt;
-            let win = amt * currentMultiplier;
+            let win = bet1Amt * currentMultiplier;
             bal += win;
             setBalance(bal);
-
-            if (panel === 1) { bet1State = 3; } else { bet2State = 3; }
-            updateButtonUI(panel, "FLYING");
+            bet1State = 3;
+            updateButtonUI(1);
             alert(`Badhai ho! Jeet liye ₹${win.toFixed(2)} (${currentMultiplier.toFixed(2)}x)`);
         }
     }
 
-    function updateButtonUI(panel, phase) {
-        let btn = document.getElementById(`btn${panel}`);
-        let state = (panel === 1) ? bet1State : bet2State;
+    function updateButtonUI(panel) {
+        let btn = document.getElementById(`btn1`);
         let nowTimestamp = Date.now();
         let cycleTime = nowTimestamp % ROUND_DURATION;
         let isWaitingPhase = cycleTime < WAIT_DURATION;
 
         if (isWaitingPhase) {
-            if (state === 1 || state === 2) {
+            if (bet1State === 1 || bet1State === 2) {
                 btn.innerText = "CANCEL";
                 btn.className = "action-btn btn-cancel";
-                btn.disabled = false;
             } else {
                 btn.innerText = "BET";
                 btn.className = "action-btn btn-bet";
-                btn.disabled = false;
             }
         } else if (cycleTime < (WAIT_DURATION + FLIGHT_DURATION)) {
-            if (state === 2) {
+            if (bet1State === 2) {
                 btn.innerText = "CASH OUT";
                 btn.className = "action-btn btn-cashout";
-                btn.disabled = false;
-            } else if (state === 3) {
+            } else if (bet1State === 3) {
                 btn.innerText = "WON";
                 btn.className = "action-btn btn-bet";
-                btn.disabled = true;
-            } else if (state === 4) {
+            } else if (bet1State === 4) {
                 btn.innerText = "CRASHED";
                 btn.className = "action-btn btn-cancel";
-                btn.disabled = true;
             } else {
                 btn.innerText = "WAIT";
                 btn.className = "action-btn btn-bet";
-                btn.disabled = true;
             }
         } else {
             btn.innerText = "CRASHED";
             btn.className = "action-btn btn-cancel";
-            btn.disabled = true;
         }
     }
 </script>
