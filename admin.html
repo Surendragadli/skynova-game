@@ -3,43 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyNova - Admin Panel</title>
+    <title>SkyNova - Cloud Admin Panel</title>
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 50px; }
         header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
         .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
-        .home-link { color: #f59e0b; text-decoration: none; font-size: 14px; font-weight: bold; }
-        
         .container { max-width: 800px; margin: 15px auto; padding: 10px; }
         .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .card-title { font-size: 16px; font-weight: bold; color: #38bdf8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
         .form-control { width: 100%; background-color: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; outline: none; box-sizing: border-box; }
         .form-control:focus { border-color: #38bdf8; }
-        
         .btn { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; }
         .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
         .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .stat-box { background-color: #161e2e; border: 1px solid #334155; border-radius: 10px; padding: 15px; text-align: center; }
         .stat-val { font-size: 18px; font-weight: bold; color: #4ade80; margin-top: 5px; }
-
         .req-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         .req-table th { background-color: #1f293d; color: #38bdf8; padding: 10px; text-align: left; }
         .req-table td { padding: 10px; border-bottom: 1px solid #1f293d; color: #cbd5e1; }
-        .action-btns { display: flex; gap: 5px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand"><i class="fa-solid fa-shield-halved"></i> SkyNova Admin Panel</div>
-    <a href="home.html" class="home-link"><i class="fa-solid fa-house"></i> Home Jayein</a>
+    <div class="brand"><i class="fa-solid fa-shield-halved"></i> SkyNova Cloud Admin Panel</div>
+    <a href="home.html" style="color: #f59e0b; text-decoration: none; font-size: 14px; font-weight: bold;"><i class="fa-solid fa-house"></i> Home</a>
 </header>
 
 <div class="container">
@@ -60,30 +53,25 @@
 
     <!-- Crash Point Control -->
     <div class="card">
-        <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Aviator Game Multiplier Control</div>
+        <div class="card-title"><i class="fa-solid fa-plane-departure"></i> Aviator Game Multiplier Control (Cloud Sync)</div>
         <div class="form-group">
             <label>Agla Crash Point Set Karein:</label>
-            <input type="number" step="0.01" id="crashInput" class="form-control" placeholder="jaise: 2.00">
+            <input type="number" step="0.01" id="crashInput" class="form-control" placeholder="jaise: 2.00 ya 5.50">
         </div>
-        <button class="btn btn-success" onclick="setCrashPoint()">Crash Point Set Karein</button>
+        <button class="btn btn-success" onclick="updateCloudCrash()">Cloud Par Set Karein</button>
         <div id="crashStatusMsg" style="font-size: 12px; color: #4ade80; margin-top: 8px; font-weight: bold;"></div>
     </div>
 
-    <!-- Live Bets -->
+    <!-- Live Game Bets -->
     <div class="card">
-        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (Phone Users)</div>
+        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Live Game Bets (All Users)</div>
         <div style="overflow-x: auto;">
             <table class="req-table">
                 <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Bet Amount</th>
-                        <th>Panel</th>
-                        <th>Status</th>
-                    </tr>
+                    <tr><th>UID</th><th>Bet Amount</th><th>Panel</th><th>Status</th></tr>
                 </thead>
                 <tbody id="liveBetsTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Koi live bet nahi hai.</td></tr>
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading live bets...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -91,19 +79,14 @@
 
     <!-- Deposit Requests -->
     <div class="card">
-        <div class="card-title"><i class="fa-solid fa-wallet"></i> Deposit Requests (UID Wise)</div>
+        <div class="card-title"><i class="fa-solid fa-wallet"></i> User Deposit Requests (Pending)</div>
         <div style="overflow-x: auto;">
             <table class="req-table">
                 <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Amount</th>
-                        <th>UTR</th>
-                        <th>Action</th>
-                    </tr>
+                    <tr><th>UID</th><th>Amount</th><th>UTR</th><th>Action</th></tr>
                 </thead>
                 <tbody id="depositTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending deposit nahi hai.</td></tr>
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading deposits...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -111,132 +94,193 @@
 
     <!-- Withdrawal Requests -->
     <div class="card">
-        <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> Withdrawal Requests (UID Wise)</div>
+        <div class="card-title"><i class="fa-solid fa-money-bill-transfer"></i> User Withdrawal Requests (Pending)</div>
         <div style="overflow-x: auto;">
             <table class="req-table">
                 <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Amount</th>
-                        <th>Details</th>
-                        <th>Action</th>
-                    </tr>
+                    <tr><th>UID</th><th>Amount</th><th>Details</th><th>Action</th></tr>
                 </thead>
                 <tbody id="withdrawalTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Koi pending withdrawal nahi hai.</td></tr>
+                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading withdrawals...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- History -->
+    <!-- Gift Code Creator -->
     <div class="card">
-        <div class="card-title"><i class="fa-solid fa-history"></i> User Deposit & Withdrawal History</div>
-        <div style="overflow-x: auto;">
-            <table class="req-table">
-                <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTableBody">
-                    <tr><td colspan="4" style="text-align: center; color: #64748b;">Koi history nahi hai.</td></tr>
-                </tbody>
-            </table>
+        <div class="card-title"><i class="fa-solid fa-gift"></i> Naya Gift Code Banayein</div>
+        <div class="form-group">
+            <label>Gift Code Name:</label>
+            <input type="text" id="giftCodeInput" class="form-control" placeholder="BONUS100">
         </div>
+        <div class="form-group">
+            <label>Bonus Amount (₹):</label>
+            <input type="number" id="giftAmountInput" class="form-control" placeholder="100">
+        </div>
+        <button class="btn" onclick="createGiftCodeCloud()">Cloud Par Gift Code Banayein</button>
     </div>
 </div>
 
 <script>
+    const BIN_ID = "6a954a31f5f4af5e2957120c";
+    const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
+
     window.addEventListener('DOMContentLoaded', () => {
-        let savedCrash = localStorage.getItem('aviator_override_crash');
-        if(savedCrash) {
-            document.getElementById('crashInput').value = savedCrash;
-            document.getElementById('crashStatusMsg').innerText = `Active Override: ${savedCrash}x`;
-        }
-        loadAdminData();
-        setInterval(loadAdminData, 2000); // Har 2 second me auto refresh
+        fetchCloudData();
+        setInterval(fetchCloudData, 2000); // Har 2 second me live sync
     });
 
-    function setCrashPoint() {
-        let val = document.getElementById('crashInput').value;
-        if(!val || isNaN(val) || parseFloat(val) < 1.00) {
-            alert("Valid multiplier dalein!");
+    async function fetchCloudData() {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+
+            if(data.crash) {
+                document.getElementById('crashInput').value = data.crash;
+            }
+
+            // Live Bets
+            let bets = data.bets || [];
+            let totalAmt = 0;
+            let betsHtml = '';
+            if(bets.length === 0) {
+                betsHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi live bet nahi hai.</td></tr>`;
+            } else {
+                bets.forEach(b => {
+                    totalAmt += parseFloat(b.amount || 0);
+                    betsHtml += `<tr><td><b>${b.uid}</b></td><td style="color:#38bdf8;">₹${b.amount}</td><td>Panel ${b.panel}</td><td style="color:#fbbf24;">Active</td></tr>`;
+                });
+            }
+            document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
+            document.getElementById('totalLiveBetAmount').innerText = `₹${totalAmt.toFixed(2)}`;
+
+            // Deposits
+            let deposits = data.deposits || [];
+            let pendingDeps = deposits.filter(d => d.status === 'Pending');
+            document.getElementById('pendingDepCount').innerText = pendingDeps.length;
+            let depHtml = pendingDeps.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending deposit nahi hai.</td></tr>` :
+                pendingDeps.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#4ade80;">₹${item.amount}</td><td>${item.utr || 'N/A'}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="approveDeposit(${item.id})">Approve</button></td></tr>`).join('');
+            document.getElementById('depositTableBody').innerHTML = depHtml;
+
+            // Withdrawals
+            let withdrawals = data.withdrawals || [];
+            let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
+            document.getElementById('pendingWithCount').innerText = pendingWiths.length;
+            let withHtml = pendingWiths.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending withdrawal nahi hai.</td></tr>` :
+                pendingWiths.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#ef4444;">₹${item.amount}</td><td>${item.details || 'UPI'}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="approveWithdraw(${item.id})">Approve</button></td></tr>`).join('');
+            document.getElementById('withdrawalTableBody').innerHTML = withHtml;
+
+        } catch(e) {
+            console.error("Cloud fetch error:", e);
+        }
+    }
+
+    async function updateCloudCrash() {
+        let val = parseFloat(document.getElementById('crashInput').value);
+        if(isNaN(val) || val < 1.00) { alert("Valid multiplier dalein!"); return; }
+
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+            data.crash = val;
+
+            let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+
+            if(updateRes.ok) {
+                document.getElementById('crashStatusMsg').innerText = `Successfully set to ${val}x!`;
+                alert(`Crash point ${val}x cloud par set ho gaya hai!`);
+            }
+        } catch(e) {
+            alert("Error updating crash: " + e);
+        }
+    }
+
+    async function createGiftCodeCloud() {
+        let code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
+        let amount = parseFloat(document.getElementById('giftAmountInput').value);
+
+        if(!code || isNaN(amount) || amount <= 0) {
+            alert("Sahi details bharein!");
             return;
         }
-        let numVal = parseFloat(val).toFixed(2);
-        localStorage.setItem('aviator_override_crash', numVal);
-        localStorage.setItem('skynova_admin_crash', numVal);
-        document.getElementById('crashStatusMsg').innerText = `Successfully Set: ${numVal}x`;
-        alert(`Crash point ${numVal}x set ho gaya hai! Ab phone par game me yahi apply hoga.`);
-    }
 
-    function loadAdminData() {
-        // Live Bets
-        let liveBets = JSON.parse(localStorage.getItem('skynova_live_bets') || '[]');
-        let totalAmt = 0;
-        let betsHtml = '';
-        if(liveBets.length === 0) {
-            betsHtml = `<tr><td colspan="4" style="text-align: center; color: #64748b;">Koi live bet nahi hai.</td></tr>`;
-        } else {
-            liveBets.forEach(b => {
-                totalAmt += parseFloat(b.amount || 0);
-                betsHtml += `<tr><td><b>${b.uid}</b></td><td style="color:#38bdf8;">₹${b.amount}</td><td>Panel ${b.panel}</td><td style="color:#fbbf24;">Active</td></tr>`;
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
             });
-        }
-        document.getElementById('liveBetsTableBody').innerHTML = betsHtml;
-        document.getElementById('totalLiveBetAmount').innerText = `₹${totalAmt.toFixed(2)}`;
+            let json = await res.json();
+            let data = json.record;
 
-        // Deposits
-        let deposits = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
-        let pendingDeps = deposits.filter(d => d.status === 'Pending');
-        document.getElementById('pendingDepCount').innerText = pendingDeps.length;
-        let depHtml = pendingDeps.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending deposit nahi hai.</td></tr>` : 
-            pendingDeps.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#4ade80;">₹${item.amount}</td><td>${item.utr || 'N/A'}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="approveDep(${item.id})">Approve</button></td></tr>`).join('');
-        document.getElementById('depositTableBody').innerHTML = depHtml;
+            if(!data.gifts) data.gifts = {};
+            data.gifts[code] = { amount: amount, maxUses: 50, usedCount: 0, claimedUsers: [] };
 
-        // Withdrawals
-        let withdrawals = JSON.parse(localStorage.getItem('skynova_withdraw_requests') || '[]');
-        let pendingWiths = withdrawals.filter(w => w.status === 'Pending');
-        document.getElementById('pendingWithCount').innerText = pendingWiths.length;
-        let withHtml = pendingWiths.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi pending withdrawal nahi hai.</td></tr>` : 
-            pendingWiths.map(item => `<tr><td><b>${item.uid}</b></td><td style="color:#ef4444;">₹${item.amount}</td><td>${item.details || 'UPI'}</td><td><button class="btn btn-success" style="padding:4px 8px; font-size:11px;" onclick="approveWith(${item.id})">Approve</button></td></tr>`).join('');
-        document.getElementById('withdrawalTableBody').innerHTML = withHtml;
+            let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
 
-        // History
-        let allHist = [];
-        deposits.forEach(d => allHist.push({uid: d.uid, type: 'Deposit', amount: d.amount, status: d.status, time: d.id}));
-        withdrawals.forEach(w => allHist.push({uid: w.uid, type: 'Withdrawal', amount: w.amount, status: w.status, time: w.id}));
-        allHist.sort((a,b) => b.time - a.time);
-
-        let histHtml = allHist.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#64748b;">Koi history nahi hai.</td></tr>` :
-            allHist.map(h => `<tr><td><b>${h.uid}</b></td><td style="color:${h.type==='Deposit'?'#4ade80':'#ef4444'}">${h.type}</td><td>₹${h.amount}</td><td>${h.status}</td></tr>`).join('');
-        document.getElementById('historyTableBody').innerHTML = histHtml;
-    }
-
-    function approveDep(id) {
-        let deps = JSON.parse(localStorage.getItem('skynova_deposit_requests') || '[]');
-        let req = deps.find(d => d.id === id);
-        if(req) {
-            req.status = 'Approved';
-            localStorage.setItem('skynova_deposit_requests', JSON.stringify(deps));
-            alert("Deposit Approved!");
-            loadAdminData();
+            if(updateRes.ok) {
+                document.getElementById('giftCodeInput').value = '';
+                document.getElementById('giftAmountInput').value = '';
+                alert(`Gift Code '${code}' (₹${amount}) successfully ban gaya hai!`);
+            }
+        } catch(e) {
+            alert("Error creating gift code.");
         }
     }
 
-    function approveWith(id) {
-        let withs = JSON.parse(localStorage.getItem('skynova_withdraw_requests') || '[]');
-        let req = withs.find(w => w.id === id);
-        if(req) {
-            req.status = 'Approved';
-            localStorage.setItem('skynova_withdraw_requests', JSON.stringify(withs));
-            alert("Withdrawal Approved!");
-            loadAdminData();
-        }
+    async function approveDeposit(id) {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+            let req = data.deposits.find(d => d.id === id);
+            if(req) {
+                req.status = 'Approved';
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify(data)
+                });
+                alert("Deposit Approved!");
+                fetchCloudData();
+            }
+        } catch(e) {}
+    }
+
+    async function approveWithdraw(id) {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+            let req = data.withdrawals.find(w => w.id === id);
+            if(req) {
+                req.status = 'Approved';
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify(data)
+                });
+                alert("Withdrawal Approved!");
+                fetchCloudData();
+            }
+        } catch(e) {}
     }
 </script>
 </body>
