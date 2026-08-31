@@ -18,7 +18,7 @@
         .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; color: #94a3b8; font-weight: bold; }
         
         .history-bar { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; margin-bottom: 12px; white-space: nowrap; }
-        .history-pill { background: #161e2e; border: 1px solid #334155; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #38bdf8; text-align: center; display: inline-block; }
+        .history-pill { background: #161e2e; border: 1px solid #334155; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #38bdf8; text-align: center; display: inline-block; min-width: 70px; }
         .history-pill span { display: block; font-size: 13px; color: #4ade80; }
 
         .game-screen { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
@@ -27,7 +27,7 @@
 
         .status-text { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; z-index: 2; text-transform: uppercase; letter-spacing: 1px; }
         
-        .plane-icon { position: absolute; font-size: 32px; color: #f59e0b; bottom: 30px; left: 20px; z-index: 3; display: none; will-change: transform; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); }
+        .plane-icon { position: absolute; font-size: 32px; color: #f59e0b; bottom: 30px; left: 20px; z-index: 3; display: none; will-change: transform; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); transition: transform 0.05s linear; }
 
         .betting-panel { background-color: #161e2e; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         .input-group { display: flex; gap: 10px; margin-bottom: 12px; }
@@ -60,8 +60,7 @@
         <span>History:</span>
     </div>
     <div class="history-bar" id="historyBar">
-        <div class="history-pill">2097610103<br><span>2.10x</span></div>
-        <div class="history-pill">2097610104<br><span>3.50x</span></div>
+        <!-- History items dynamically inject honge -->
     </div>
 
     <div class="game-screen">
@@ -102,6 +101,7 @@
     let activeBetAmount = 0;
     let historyList = JSON.parse(localStorage.getItem('skynova_game_history_detailed') || '[{"period":"2097610103", "mult":"2.10x"}, {"period":"2097610104", "mult":"3.50x"}]');
     let cloudPeriodCrashes = {};
+    let lastProcessedPeriod = 0;
 
     updateHistoryUI();
 
@@ -185,13 +185,14 @@
         }
     }
 
+    // High performance smooth loop with zero lag
     function initGameEngine() {
         const WAIT_TIME = 13; // 13 seconds waiting
         const FLIGHT_TIME = 12; // 12 seconds flight
         const TOTAL_CYCLE = WAIT_TIME + FLIGHT_TIME;
 
         setInterval(async () => {
-            fetchPeriodCrashes();
+            await fetchPeriodCrashes();
 
             let nowSec = Math.floor(Date.now() / 1000);
             let cycleTime = nowSec % TOTAL_CYCLE;
@@ -203,6 +204,7 @@
             let plane = document.getElementById('plane');
 
             if (cycleTime < WAIT_TIME) {
+                // WAITING PHASE (13 SECONDS)
                 multEl.innerText = "1.00x";
                 multEl.classList.remove('crashed');
                 plane.style.display = 'none';
@@ -221,6 +223,7 @@
                 }
 
             } else {
+                // FLIGHT PHASE
                 if (plane.style.display !== 'block') {
                     plane.style.display = 'block';
                     statusEl.innerText = "Fly away!";
@@ -238,6 +241,7 @@
                 let flightElapsed = cycleTime - WAIT_TIME;
                 let currentMult = 1.00 + (flightElapsed * 0.35);
 
+                // Admin set crash check (supporting both string & number keys)
                 let targetCrash = cloudPeriodCrashes[periodId.toString()] || cloudPeriodCrashes[periodId];
                 if (!targetCrash) {
                     let seed = periodId * 9301 + 49297;
@@ -257,17 +261,14 @@
                 if (yPos > 120) yPos = 120;
                 plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(${22 - (flightElapsed * 1.2)}deg)`;
 
-                if (currentMult >= targetCrash && !statusEl.dataset.crashedOnce) {
-                    statusEl.dataset.crashedOnce = "true";
+                // Trigger Crash when target is reached and not already processed for this period
+                if (currentMult >= targetCrash && lastProcessedPeriod !== periodId) {
+                    lastProcessedPeriod = periodId;
                     triggerCrash(targetCrash, periodId);
                 }
             }
 
-            if (cycleTime === 0) {
-                delete document.getElementById('gameStatus').dataset.crashedOnce;
-            }
-
-        }, 50);
+        }, 40); // 40ms high-speed polling for ultra-smooth rendering
     }
 
     function cashOut() {
@@ -298,10 +299,14 @@
         document.getElementById('plane').style.display = 'none';
 
         let finalStr = crashVal.toFixed(2) + 'x';
-        historyList.unshift({ period: currentPeriodId, mult: finalStr });
-        if(historyList.length > 10) historyList.pop();
-        localStorage.setItem('skynova_game_history_detailed', JSON.stringify(historyList));
-        updateHistoryUI();
+        
+        // Check if period already exists in history to prevent duplicates
+        if (!historyList.some(h => h.period == currentPeriodId)) {
+            historyList.unshift({ period: currentPeriodId, mult: finalStr });
+            if(historyList.length > 10) historyList.pop();
+            localStorage.setItem('skynova_game_history_detailed', JSON.stringify(historyList));
+            updateHistoryUI();
+        }
 
         if(betPlaced) {
             betPlaced = false;
