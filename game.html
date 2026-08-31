@@ -97,10 +97,21 @@
     let currentMultiplier = 1.00;
     let betPlaced = false;
     let activeBetAmount = 0;
-    let gameInterval = null;
+    let flightInterval = null;
     let historyList = JSON.parse(localStorage.getItem('skynova_game_history') || '["1.45x", "2.10x"]');
+    let cloudPeriodCrashes = {};
 
     updateHistoryUI();
+
+    async function fetchPeriodCrashes() {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            cloudPeriodCrashes = json.record.periodCrashes || {};
+        } catch(e) {}
+    }
 
     function setBet(amount) {
         let current = parseFloat(document.getElementById('betAmount').value || 0);
@@ -173,18 +184,17 @@
         }
     }
 
-    // Continuous Timestamp-based Game Loop (Regular chalega chahe user ho ya na ho)
     function runContinuousGameLoop() {
-        setInterval(() => {
-            let now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-            let cycleTime = now % 25; // Har 25 second ka ek complete round (13 sec waiting + 12 sec flight)
-            
-            // Period number calculation based on time
+        setInterval(async () => {
+            fetchPeriodCrashes(); // Refresh period crashes from cloud periodically
+
+            let now = Math.floor(Date.now() / 1000);
+            let cycleTime = now % 25; // 25s total cycle (13s wait + 12s flight)
             let periodId = 2026083100 + Math.floor(now / 25);
             document.getElementById('periodNumber').innerText = periodId;
 
             if(cycleTime < 13) {
-                // Waiting Phase (13 seconds)
+                // Waiting Phase
                 if(gameState !== 'waiting') {
                     gameState = 'waiting';
                     document.getElementById('multiplier').innerText = "1.00x";
@@ -192,7 +202,6 @@
                     plane.style.display = 'none';
                     plane.style.transform = `translate(0px, 0px) rotate(0deg)`;
 
-                    // Agar user ne bet lagayi thi aur cashout nahi kiya toh har round ke shuru me reset
                     if(betPlaced && gameState === 'crashed') {
                         betPlaced = false;
                         let btn = document.getElementById('actionBtn');
@@ -206,7 +215,7 @@
                 document.getElementById('gameStatus').innerText = `Next round starts in ${timeLeft}s...`;
 
             } else {
-                // Flight / Running Phase
+                // Running Phase
                 if(gameState === 'waiting') {
                     gameState = 'running';
                     currentMultiplier = 1.00;
@@ -224,7 +233,6 @@
                     }
                 }
 
-                // Increment multiplier smoothly during flight
                 currentMultiplier += 0.04;
                 document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + 'x';
 
@@ -235,9 +243,11 @@
                 let plane = document.getElementById('plane');
                 plane.style.transform = `translate(${xPos}px, -${yPos}px) rotate(25deg)`;
 
-                // End of flight at 25 seconds mark
-                if(cycleTime >= 24 && gameState === 'running') {
-                    triggerCrash();
+                // Check if admin has set specific crash multiplier for this period
+                let targetCrash = cloudPeriodCrashes[periodId] || 2.00;
+
+                if((currentMultiplier >= targetCrash || cycleTime >= 24) && gameState === 'running') {
+                    triggerCrash(targetCrash);
                 }
             }
         }, 1000);
@@ -257,9 +267,9 @@
         clearCloudBets();
     }
 
-    function triggerCrash() {
+    function triggerCrash(crashVal) {
         gameState = 'crashed';
-        let finalStr = currentMultiplier.toFixed(2) + 'x';
+        let finalStr = crashVal.toFixed(2) + 'x';
         document.getElementById('multiplier').innerText = finalStr;
         document.getElementById('gameStatus').innerText = "CRASHED!";
         document.getElementById('plane').style.display = 'none';
@@ -285,6 +295,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        fetchPeriodCrashes();
         runContinuousGameLoop();
     });
 </script>
