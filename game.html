@@ -26,6 +26,7 @@
         .multiplier-display.crashed { color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
 
         .status-text { font-size: 14px; color: #94a3b8; margin-top: 5px; font-weight: bold; z-index: 2; text-transform: uppercase; letter-spacing: 1px; }
+        
         .plane-icon { position: absolute; font-size: 32px; color: #f59e0b; bottom: 30px; left: 20px; z-index: 3; display: none; will-change: transform; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); transition: transform 0.05s linear; }
 
         .betting-panel { background-color: #161e2e; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
@@ -55,7 +56,7 @@
 
 <div class="game-container">
     <div class="info-bar">
-        <span>Period: <b id="periodNumber" style="color: #38bdf8;">2097610101</b></span>
+        <span>Period: <b id="periodNumber" style="color: #38bdf8;">2097610001</b></span>
         <span>History:</span>
     </div>
     <div class="history-bar" id="historyBar"></div>
@@ -163,23 +164,6 @@
         } catch(e) {}
     }
 
-    async function updateCloudPeriod(periodId) {
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let json = await res.json();
-            let data = json.record;
-            data.currentPeriod = periodId;
-
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(data)
-            });
-        } catch(e) {}
-    }
-
     function handleBetAction() {
         let amount = parseFloat(document.getElementById('betAmount').value);
         if(isNaN(amount) || amount <= 0) { alert("Valid amount dalein!"); return; }
@@ -211,8 +195,6 @@
             let cycleTime = nowSec % TOTAL_CYCLE;
             let periodId = 2097610000 + Math.floor(nowSec / TOTAL_CYCLE);
             document.getElementById('periodNumber').innerText = periodId;
-
-            updateCloudPeriod(periodId);
 
             let multEl = document.getElementById('multiplier');
             let statusEl = document.getElementById('gameStatus');
