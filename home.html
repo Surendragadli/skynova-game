@@ -9,17 +9,22 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 90px; }
         header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
-        .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
+        .brand { font-size: 18px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
         .container { max-width: 500px; margin: 15px auto; padding: 10px; }
-        .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
-        .balance-val { font-size: 32px; font-weight: bold; color: #4ade80; margin: 10px 0; }
-        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; text-decoration: none; display: inline-block; }
-        .btn-deposit { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-        .btn-withdraw { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-        .game-banner { background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #38bdf8; border-radius: 14px; padding: 25px; text-align: center; margin-top: 15px; }
-        .game-banner h2 { color: #38bdf8; margin-bottom: 10px; }
-        .btn-play { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; padding: 14px 30px; border-radius: 10px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; text-transform: uppercase; }
+        
+        .wallet-banner { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .balance-title { font-size: 13px; color: #94a3b8; font-weight: bold; }
+        .balance-amount { font-size: 32px; font-weight: bold; color: #4ade80; margin: 8px 0 15px 0; }
+        .wallet-btns { display: flex; gap: 10px; }
+        .wallet-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; text-decoration: none; text-align: center; }
+        .btn-dep { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+        .btn-with { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+
+        .game-card { background: linear-gradient(135deg, #161e2e, #1e1b4b); border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
+        .game-title { font-size: 20px; font-weight: bold; color: #38bdf8; margin-bottom: 5px; }
+        .game-desc { font-size: 13px; color: #94a3b8; margin-bottom: 15px; }
+        .btn-play { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #0b0f19; border: none; padding: 12px 30px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; text-transform: uppercase; }
+
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #161e2e; display: flex; justify-content: space-around; padding: 14px 0; border-top: 2px solid #1f293d; z-index: 50; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: bold; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
         .nav-item.active { color: #38bdf8; }
@@ -29,24 +34,32 @@
 
 <header>
     <div class="brand"><i class="fa-solid fa-rocket"></i> SkyNova</div>
-    <a href="admin.html" style="color: #f59e0b; text-decoration: none; font-size: 13px; font-weight: bold;"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+    <div style="color: #94a3b8; font-size: 13px;">UID: <b style="color: #38bdf8;">794973</b></div>
 </header>
 
 <div class="container">
-    <div class="card">
-        <div style="font-size: 13px; color: #94a3b8;">Total Available Balance</div>
-        <div class="balance-val">₹<span id="homeBalance">326.10</span></div>
-        <div style="font-size: 12px; color: #64748b;">UID: <span id="homeUid">794973</span></div>
-        <div class="btn-row">
-            <a href="account.html" class="btn btn-deposit">Deposit</a>
-            <a href="account.html" class="btn btn-withdraw">Withdraw</a>
+    <!-- Wallet Banner -->
+    <div class="wallet-banner">
+        <div class="balance-title">Total Available Balance</div>
+        <div class="balance-amount">₹<span id="homeBalance">326.10</span></div>
+        <div class="wallet-btns">
+            <a href="account.html" class="wallet-btn btn-dep">Deposit</a>
+            <a href="account.html" class="wallet-btn btn-with">Withdraw</a>
         </div>
     </div>
 
-    <div class="game-banner">
-        <h2>Aviator Flight Game</h2>
-        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 15px;">Bet lagayein aur rocket ke sath fly karke cash out karein!</p>
+    <!-- Aviator Game Card -->
+    <div class="game-card">
+        <div class="game-title"><i class="fa-solid fa-plane-departure"></i> Aviator Flight Game</div>
+        <div class="game-desc">Bet lagayein aur rocket ke sath fly karke cash out karein!</div>
         <a href="game.html" class="btn-play">Play Now</a>
+    </div>
+
+    <!-- Dragon vs Tiger Game Card (New) -->
+    <div class="game-card">
+        <div class="game-title"><i class="fa-solid fa-dragon" style="color: #f59e0b;"></i> Dragon vs Tiger</div>
+        <div class="game-desc">Choose your side: Dragon or Tiger and win big!</div>
+        <a href="dragon.html" class="btn-play" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19;">Play Now</a>
     </div>
 </div>
 
@@ -58,9 +71,7 @@
 
 <script>
     let balance = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
-    let uid = localStorage.getItem('skynova_uid') || '794973';
     document.getElementById('homeBalance').innerText = balance.toFixed(2);
-    document.getElementById('homeUid').innerText = uid;
 </script>
 </body>
 </html>
