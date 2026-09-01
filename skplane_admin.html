@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyNova - Plane Admin Panel</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0b0f19; color: #ffffff; margin: 0; padding-bottom: 50px; }
+        header { background-color: #161e2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1f293d; }
+        .brand { font-size: 18px; font-weight: bold; color: #38bdf8; }
+        .container { max-width: 600px; margin: 20px auto; padding: 10px; }
+        .card { background-color: #161e2e; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .card-title { font-size: 16px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
+        .form-control { width: 100%; background-color: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; outline: none; box-sizing: border-box; }
+        .btn { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-transform: uppercase; width: 100%; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand"><i class="fa-solid fa-plane-departure" style="color: #38bdf8;"></i> Plane Game Admin</div>
+    <a href="home.html" style="color: #f59e0b; text-decoration: none; font-size: 14px; font-weight: bold;"><i class="fa-solid fa-house"></i> Home</a>
+</header>
+
+<div class="container">
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Period-wise Crash Point Control</div>
+        <div class="form-group">
+            <label>Target Period Number:</label>
+            <input type="text" id="targetPeriod" class="form-control" placeholder="jaise: 2097610005">
+        </div>
+        <div class="form-group">
+            <label>Crash Multiplier (jaise 3.50):</label>
+            <input type="number" step="0.01" id="targetCrash" class="form-control" placeholder="3.50">
+        </div>
+        <button class="btn" onclick="setPlaneCrash()">Crash Multiplier Set Karein</button>
+        <div id="statusMsg" style="font-size: 13px; color: #4ade80; margin-top: 10px; font-weight: bold;"></div>
+    </div>
+</div>
+
+<script>
+    const BIN_ID = "6a956b28f5f4af5e29579654";
+    const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
+
+    async function setPlaneCrash() {
+        let period = document.getElementById('targetPeriod').value.trim();
+        let crashVal = parseFloat(document.getElementById('targetCrash').value);
+
+        if(!period || isNaN(crashVal) || crashVal < 1.00) {
+            alert("Valid period aur multiplier dalein!");
+            return;
+        }
+
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            let data = json.record;
+
+            if(!data.periodCrashes) data.periodCrashes = {};
+            data.periodCrashes[period] = crashVal;
+
+            let updateRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+
+            if(updateRes.ok) {
+                document.getElementById('statusMsg').innerText = `Period ${period} ke liye ${crashVal}x crash set ho gaya!`;
+                alert(`Success! Period ${period} par ${crashVal}x par plane crash hoga.`);
+            }
+        } catch(e) {
+            alert("Error setting crash point.");
+        }
+    }
+</script>
+</body>
+</html>
