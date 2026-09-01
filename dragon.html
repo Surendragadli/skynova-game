@@ -25,14 +25,12 @@
         .status-banner { text-align: center; font-size: 15px; font-weight: bold; color: #fbbf24; margin: 12px 0; }
 
         .betting-panel { background-color: #161e2e; border: 1px solid #334155; border-radius: 16px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .bet-choices { display: flex; gap: 10px; margin-bottom: 15px; }
-        .choice-btn { flex: 1; padding: 15px; border: 2px solid #334155; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; color: #fff; background: #0b0f19; text-align: center; }
+        .bet-choices { display: flex; gap: 15px; margin-bottom: 15px; }
+        .choice-btn { flex: 1; padding: 20px; border: 2px solid #334155; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; text-transform: uppercase; color: #fff; background: #0b0f19; text-align: center; }
         .choice-btn.dragon { border-color: #ef4444; }
         .choice-btn.dragon.selected { background: #ef4444; color: #fff; }
         .choice-btn.tiger { border-color: #38bdf8; }
         .choice-btn.tiger.selected { background: #38bdf8; color: #0b0f19; }
-        .choice-btn.tie { border-color: #22c55e; }
-        .choice-btn.tie.selected { background: #22c55e; color: #fff; }
 
         .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
         .bet-input { flex: 1; background: #0b0f19; border: 1px solid #334155; border-radius: 8px; color: #fff; padding: 12px; font-size: 16px; font-weight: bold; outline: none; }
@@ -57,7 +55,7 @@
 
 <div class="game-container">
     <div class="info-bar">
-        <span>Period: <b id="periodNumber" style="color: #38bdf8;">2097610001</b></span>
+        <span>Period: <b id="periodNumber" style="color: #38bdf8;">3097610001</b></span>
     </div>
 
     <div class="battle-screen">
@@ -77,7 +75,6 @@
     <div class="betting-panel">
         <div class="bet-choices">
             <button class="choice-btn dragon" id="btnDragon" onclick="selectChoice('Dragon')">Dragon (2x)</button>
-            <button class="choice-btn tie" id="btnTie" onclick="selectChoice('Tie')">Tie (8x)</button>
             <button class="choice-btn tiger" id="btnTiger" onclick="selectChoice('Tiger')">Tiger (2x)</button>
         </div>
 
@@ -138,13 +135,12 @@
         if(!bettingAllowed || betPlaced) return;
         selectedChoice = choice;
         document.getElementById('btnDragon').className = "choice-btn dragon" + (choice === 'Dragon' ? ' selected' : '');
-        document.getElementById('btnTie').className = "choice-btn tie" + (choice === 'Tie' ? ' selected' : '');
         document.getElementById('btnTiger').className = "choice-btn tiger" + (choice === 'Tiger' ? ' selected' : '');
     }
 
     function placeBet() {
         if(!bettingAllowed) { alert("Betting band ho chuki hai (Last 10 seconds remaining)!"); return; }
-        if(!selectedChoice) { alert("Kripya Dragon, Tiger ya Tie chunein!"); return; }
+        if(!selectedChoice) { alert("Kripya Dragon ya Tiger chunein!"); return; }
         let amount = parseFloat(document.getElementById('betAmount').value);
         if(isNaN(amount) || amount <= 0) { alert("Valid amount dalein!"); return; }
 
@@ -158,7 +154,6 @@
         btn.disabled = true;
     }
 
-    // 70 seconds total cycle: 60s betting time + 10s result/lock time
     function initDragonGame() {
         const BET_TIME = 60; 
         const TOTAL_CYCLE = 70;
@@ -177,7 +172,6 @@
             let actionBtn = document.getElementById('actionBtn');
 
             if (cycleTime < BET_TIME) {
-                // 60 seconds betting phase
                 let timeLeft = BET_TIME - cycleTime;
                 
                 if (timeLeft <= 10) {
@@ -203,11 +197,9 @@
                 }
 
             } else {
-                // Last 10 seconds result reveal phase
                 bettingAllowed = false;
                 statusEl.innerText = "Revealing Cards...";
                 
-                // Admin control check or natural random winner
                 let forcedWinner = cloudDragonSettings[periodId.toString()] || cloudDragonSettings[periodId];
                 
                 let dCardVal, tCardVal;
@@ -215,27 +207,26 @@
                     dCardVal = 13; tCardVal = 5;
                 } else if (forcedWinner === 'Tiger') {
                     dCardVal = 4; tCardVal = 12;
-                } else if (forcedWinner === 'Tie') {
-                    dCardVal = 8; tCardVal = 8;
                 } else {
                     let seed = periodId * 9301 + 49297;
                     dCardVal = (seed % 13) + 1;
                     tCardVal = ((seed * 3) % 13) + 1;
+                    // Ensure no tie if tie is removed
+                    if(dCardVal === tCardVal) tCardVal = (dCardVal % 13) + 1;
                 }
 
                 let cardNames = {1:'A', 11:'J', 12:'Q', 13:'K'};
                 dragonCard.innerText = cardNames[dCardVal] || dCardVal;
                 tigerCard.innerText = cardNames[tCardVal] || tCardVal;
 
-                let winner = dCardVal > tCardVal ? 'Dragon' : (tCardVal > dCardVal ? 'Tiger' : 'Tie');
+                let winner = dCardVal > tCardVal ? 'Dragon' : 'Tiger';
                 statusEl.innerText = `Winner: ${winner.toUpperCase()}!`;
 
                 if (betPlaced && lastProcessedPeriod !== periodId) {
                     lastProcessedPeriod = periodId;
                     let betAmt = parseFloat(document.getElementById('betAmount').value);
                     if (selectedChoice === winner) {
-                        let multiplier = winner === 'Tie' ? 8 : 2;
-                        let winAmt = betAmt * multiplier;
+                        let winAmt = betAmt * 2;
                         updateBalance(balance + winAmt);
                         alert(`Badhai ho! Aap jeet gaye! ₹${winAmt.toFixed(2)} added.`);
                     } else {
