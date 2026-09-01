@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div class="status-text status-banner" id="gameStatus">Waiting for next round...</div>
+    <div class="status-text status-banner" id="gameStatus">Waiting for round...</div>
 
     <div class="betting-panel">
         <div class="bet-choices">
@@ -101,11 +101,27 @@
 </div>
 
 <script>
+    const BIN_ID = "6a956b28f5f4af5e29579654";
+    const API_KEY = "$2a$10$NlG72U8qTFJlqXuI46qkm.GIULbWkTOFL0QznU4GCT0ypt9I5Icy6";
+
     let balance = parseFloat(localStorage.getItem('skynova_balance') || '326.10');
+    let uid = localStorage.getItem('skynova_uid') || '794973';
     document.getElementById('userBalance').innerText = balance.toFixed(2);
 
     let selectedChoice = '';
     let betPlaced = false;
+    let bettingAllowed = true;
+    let cloudDragonSettings = {};
+
+    async function fetchDragonCloud() {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY, 'Cache-Control': 'no-cache' }
+            });
+            let json = await res.json();
+            cloudDragonSettings = json.record.dragonSettings || {};
+        } catch(e) {}
+    }
 
     function setBet(amount) {
         let current = parseFloat(document.getElementById('betAmount').value || 0);
@@ -119,7 +135,7 @@
     }
 
     function selectChoice(choice) {
-        if(betPlaced) return;
+        if(!bettingAllowed || betPlaced) return;
         selectedChoice = choice;
         document.getElementById('btnDragon').className = "choice-btn dragon" + (choice === 'Dragon' ? ' selected' : '');
         document.getElementById('btnTie').className = "choice-btn tie" + (choice === 'Tie' ? ' selected' : '');
@@ -127,7 +143,8 @@
     }
 
     function placeBet() {
-        if(!selectedChoice) { alert("Kripya Dragon, Tiger ya Tie me se koi ek chunein!"); return; }
+        if(!bettingAllowed) { alert("Betting band ho chuki hai (Last 10 seconds remaining)!"); return; }
+        if(!selectedChoice) { alert("Kripya Dragon, Tiger ya Tie chunein!"); return; }
         let amount = parseFloat(document.getElementById('betAmount').value);
         if(isNaN(amount) || amount <= 0) { alert("Valid amount dalein!"); return; }
 
@@ -141,52 +158,74 @@
         btn.disabled = true;
     }
 
-    // Dragon vs Tiger Continuous Game Loop (25 seconds round: 12s betting + 13s result)
+    // 70 seconds total cycle: 60s betting time + 10s result/lock time
     function initDragonGame() {
-        const TOTAL_CYCLE = 25;
-        const BET_TIME = 12;
+        const BET_TIME = 60; 
+        const TOTAL_CYCLE = 70;
 
-        setInterval(() => {
+        setInterval(async () => {
+            await fetchDragonCloud();
+
             let nowSec = Math.floor(Date.now() / 1000);
             let cycleTime = nowSec % TOTAL_CYCLE;
-            let periodId = 2097610000 + Math.floor(nowSec / TOTAL_CYCLE);
+            let periodId = 3097610000 + Math.floor(nowSec / TOTAL_CYCLE);
             document.getElementById('periodNumber').innerText = periodId;
 
             let statusEl = document.getElementById('gameStatus');
             let dragonCard = document.getElementById('dragonCard');
             let tigerCard = document.getElementById('tigerCard');
+            let actionBtn = document.getElementById('actionBtn');
 
             if (cycleTime < BET_TIME) {
-                // Betting Phase
+                // 60 seconds betting phase
                 let timeLeft = BET_TIME - cycleTime;
-                statusEl.innerText = `Place your bets! Time left: ${timeLeft}s`;
+                
+                if (timeLeft <= 10) {
+                    bettingAllowed = false;
+                    statusEl.innerText = `Betting Closed! Result in ${timeLeft}s`;
+                    actionBtn.style.background = "#475569";
+                    actionBtn.disabled = true;
+                } else {
+                    bettingAllowed = true;
+                    statusEl.innerText = `Place your bets! Time left: ${timeLeft}s`;
+                }
+
                 dragonCard.innerText = "?";
                 tigerCard.innerText = "?";
 
-                if (cycleTime === 0 && betPlaced) {
+                if (cycleTime === 0) {
                     betPlaced = false;
                     selectedChoice = '';
-                    let btn = document.getElementById('actionBtn');
-                    btn.innerText = "PLACE BET";
-                    btn.style.background = "linear-gradient(135deg, #22c55e, #16a34a)";
-                    btn.disabled = false;
+                    actionBtn.innerText = "PLACE BET";
+                    actionBtn.style.background = "linear-gradient(135deg, #22c55e, #16a34a)";
+                    actionBtn.disabled = false;
                     selectChoice('');
                 }
+
             } else {
-                // Result Phase
+                // Last 10 seconds result reveal phase
+                bettingAllowed = false;
                 statusEl.innerText = "Revealing Cards...";
                 
-                // Deterministic cards based on periodId so all users see same result
-                let seed = periodId * 9301 + 49297;
-                let dCardVal = (seed % 13) + 1;
-                let tCardVal = ((seed * 3) % 13) + 1;
+                // Admin control check or natural random winner
+                let forcedWinner = cloudDragonSettings[periodId.toString()] || cloudDragonSettings[periodId];
+                
+                let dCardVal, tCardVal;
+                if (forcedWinner === 'Dragon') {
+                    dCardVal = 13; tCardVal = 5;
+                } else if (forcedWinner === 'Tiger') {
+                    dCardVal = 4; tCardVal = 12;
+                } else if (forcedWinner === 'Tie') {
+                    dCardVal = 8; tCardVal = 8;
+                } else {
+                    let seed = periodId * 9301 + 49297;
+                    dCardVal = (seed % 13) + 1;
+                    tCardVal = ((seed * 3) % 13) + 1;
+                }
 
                 let cardNames = {1:'A', 11:'J', 12:'Q', 13:'K'};
-                let dStr = cardNames[dCardVal] || dCardVal;
-                let tStr = cardNames[tCardVal] || tCardVal;
-
-                dragonCard.innerText = dStr;
-                tigerCard.innerText = tStr;
+                dragonCard.innerText = cardNames[dCardVal] || dCardVal;
+                tigerCard.innerText = cardNames[tCardVal] || tCardVal;
 
                 let winner = dCardVal > tCardVal ? 'Dragon' : (tCardVal > dCardVal ? 'Tiger' : 'Tie');
                 statusEl.innerText = `Winner: ${winner.toUpperCase()}!`;
